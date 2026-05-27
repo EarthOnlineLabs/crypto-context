@@ -57,6 +57,8 @@ create policy "Users read own tokens" on mcp_tokens
   for select using (auth.uid() = user_id);
 create policy "Users insert own tokens" on mcp_tokens
   for insert with check (auth.uid() = user_id);
+create policy "Users update own tokens" on mcp_tokens
+  for update using (auth.uid() = user_id);
 
 -- Service role needs to read tokens for MCP auth (no RLS bypass needed for service role)
 -- The service role key automatically bypasses RLS

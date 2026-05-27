@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
 import { randomBytes, createHash } from "crypto";
 import {
   checkRateLimit,
@@ -15,6 +16,14 @@ import {
   validateTokenName,
   validateUUID,
 } from "@/lib/security";
+
+function createServiceClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { cookies: { getAll: () => [], setAll: () => {} } }
+  );
+}
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -136,6 +145,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  // Authenticate via session cookie
   const supabase = await createClient();
   const {
     data: { user },
@@ -158,7 +168,9 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: idError }, { status: 400 });
   }
 
-  const { error } = await supabase
+  // Use service client to bypass RLS for update (user_id filter ensures ownership)
+  const serviceClient = createServiceClient();
+  const { error } = await serviceClient
     .from("mcp_tokens")
     .update({ revoked: true })
     .eq("id", tokenId)
