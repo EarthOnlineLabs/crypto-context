@@ -16,6 +16,9 @@ export interface WalletSnapshot {
   fetchedAt: string;
 }
 
+/** Timeout for external HTTP calls (CoinGecko, RPC) */
+const FETCH_TIMEOUT_MS = 15_000;
+
 async function fetchNativePriceUsd(coingeckoId: string): Promise<number> {
   const ids: Record<string, string> = {
     ethereum: "ethereum",
@@ -26,13 +29,18 @@ async function fetchNativePriceUsd(coingeckoId: string): Promise<number> {
   };
   const id = ids[coingeckoId] ?? coingeckoId;
 
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`,
-    { next: { revalidate: 300 } }
-  );
-  if (!res.ok) return 0;
-  const data = await res.json();
-  return data[id]?.usd ?? 0;
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`,
+      { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), cache: "no-store" }
+    );
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data[id]?.usd ?? 0;
+  } catch (err) {
+    console.error(`[wallet] CoinGecko native price failed for ${id}:`, err instanceof Error ? err.message : err);
+    return 0;
+  }
 }
 
 async function fetchTokenPricesUsd(
@@ -41,18 +49,23 @@ async function fetchTokenPricesUsd(
   if (coingeckoIds.length === 0) return {};
 
   const ids = [...new Set(coingeckoIds)].join(",");
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`,
-    { next: { revalidate: 300 } }
-  );
-  if (!res.ok) return {};
-  const data = await res.json();
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`,
+      { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), cache: "no-store" }
+    );
+    if (!res.ok) return {};
+    const data = await res.json();
 
-  const prices: Record<string, number> = {};
-  for (const id of coingeckoIds) {
-    prices[id] = data[id]?.usd ?? 0;
+    const prices: Record<string, number> = {};
+    for (const id of coingeckoIds) {
+      prices[id] = data[id]?.usd ?? 0;
+    }
+    return prices;
+  } catch (err) {
+    console.error(`[wallet] CoinGecko token prices failed:`, err instanceof Error ? err.message : err);
+    return {};
   }
-  return prices;
 }
 
 export async function fetchWalletPortfolio(
@@ -62,18 +75,23 @@ export async function fetchWalletPortfolio(
   const config = CHAIN_CONFIGS[chain];
   const client = createPublicClient({
     chain: config.chain,
-    transport: http(),
+    transport: http(undefined, { timeout: FETCH_TIMEOUT_MS }),
   });
 
   const holdings: WalletHolding[] = [];
   let totalUsdValue = 0;
   const source = `${chain}:${address.slice(0, 6)}...${address.slice(-4)}`;
 
-  // Fetch native balance
-  const nativeBalance = await client.getBalance({ address });
-  const nativeAmount = parseFloat(formatUnits(nativeBalance, 18));
+  // Step 1: Fetch native balance
+  let nativeAmount = 0;
+  try {
+    const nativeBalance = await client.getBalance({ address });
+    nativeAmount = parseFloat(formatUnits(nativeBalance, 18));
+  } catch (err) {
+    console.error(`[wallet] Native balance failed for ${chain}:${address.slice(0, 10)}:`, err instanceof Error ? err.message : err);
+  }
 
-  // Fetch ERC-20 balances via multicall
+  // Step 2: Fetch ERC-20 balances via multicall
   const tokenCalls = config.tokens.map((token) => ({
     address: token.address,
     abi: ERC20_ABI,
@@ -82,16 +100,20 @@ export async function fetchWalletPortfolio(
   }));
 
   let tokenBalances: bigint[] = [];
-  if (tokenCalls.length > 0) {
-    const results = await client.multicall({ contracts: tokenCalls });
-    tokenBalances = results.map((r) =>
-      r.status === "success" ? (r.result as bigint) : BigInt(0)
-    );
+  try {
+    if (tokenCalls.length > 0) {
+      const results = await client.multicall({ contracts: tokenCalls });
+      tokenBalances = results.map((r) =>
+        r.status === "success" ? (r.result as bigint) : BigInt(0)
+      );
+    }
+  } catch (err) {
+    console.error(`[wallet] Multicall failed for ${chain}:${address.slice(0, 10)}:`, err instanceof Error ? err.message : err);
   }
 
-  // Fetch all prices in one batch
+  // Step 3: Fetch all prices in one batch
   const coingeckoIds = config.tokens
-    .filter((_, i) => tokenBalances[i] > BigInt(0))
+    .filter((_, i) => tokenBalances[i] !== undefined && tokenBalances[i] > BigInt(0))
     .map((t) => t.coingeckoId);
 
   const [nativePrice, tokenPrices] = await Promise.all([
