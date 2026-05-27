@@ -120,22 +120,18 @@ export default function DashboardPage() {
 
       setWallets(ws ?? []);
 
-      if ((conns && conns.length > 0) || (ws && ws.length > 0)) {
-        await fetchPortfolio();
-      }
+      // Fetch existing MCP tokens (non-blocking)
+      fetch("/api/mcp/tokens")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => d && setExistingTokens(d.tokens ?? []))
+        .catch(() => {});
 
-      // Fetch existing MCP tokens
-      try {
-        const tokensRes = await fetch("/api/mcp/tokens");
-        if (tokensRes.ok) {
-          const tokensData = await tokensRes.json();
-          setExistingTokens(tokensData.tokens ?? []);
-        }
-      } catch {
-        // non-critical
-      }
-
+      // Show dashboard immediately, fetch portfolio in background
       setLoading(false);
+
+      if ((conns && conns.length > 0) || (ws && ws.length > 0)) {
+        fetchPortfolio();
+      }
     }
     init();
   }, [router, fetchPortfolio]);

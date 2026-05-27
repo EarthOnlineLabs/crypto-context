@@ -66,15 +66,33 @@ export async function GET(request: NextRequest) {
 
   const errors: { source: string; error: string }[] = [];
 
-  // Fetch ALL exchange + wallet portfolios in parallel
-  const exchangePromises = connections.map(async (conn) => {
-    const creds = await getConnectionCredentials(conn.id, user.id);
-    if (!creds) return null;
-    try {
-      const snapshot = await fetchPortfolio(creds.exchange, creds.credentials);
-      await saveSnapshot(user.id, conn.id, snapshot);
-      return snapshot;
-    } catch (err) {
+  // Helper: race a promise against a timeout (returns null on timeout)
+  function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T | null> {
+    return Promise.race([
+      promise,
+      new Promise<null>((resolve) =>
+        setTimeout(() => {
+          console.error(`[portfolio] Timeout after ${ms}ms: ${label}`);
+          errors.push({ source: label, error: `Timed out after ${ms / 1000}s` });
+          resolve(null);
+        }, ms)
+      ),
+    ]);
+  }
+
+  // Fetch ALL exchange + wallet portfolios in parallel with individual timeouts
+  const exchangePromises = connections.map((conn) =>
+    withTimeout(
+      (async () => {
+        const creds = await getConnectionCredentials(conn.id, user.id);
+        if (!creds) return null;
+        const snapshot = await fetchPortfolio(creds.exchange, creds.credentials);
+        await saveSnapshot(user.id, conn.id, snapshot);
+        return snapshot;
+      })(),
+      20_000,
+      conn.exchange
+    ).catch((err) => {
       const rawMessage = err instanceof Error ? err.message : String(err);
       console.error(`[portfolio] Failed to fetch ${conn.exchange}: ${rawMessage}`);
       errors.push({
@@ -82,16 +100,15 @@ export async function GET(request: NextRequest) {
         error: sanitizeExchangeError(rawMessage, conn.exchange),
       });
       return null;
-    }
-  });
+    })
+  );
 
-  const walletPromises = wallets.map(async (w) => {
-    try {
-      return await fetchWalletPortfolio(
-        w.address as `0x${string}`,
-        w.chain as SupportedChain
-      );
-    } catch (err) {
+  const walletPromises = wallets.map((w) =>
+    withTimeout(
+      fetchWalletPortfolio(w.address as `0x${string}`, w.chain as SupportedChain),
+      15_000,
+      `${w.chain}:${w.address.slice(0, 10)}`
+    ).catch((err) => {
       console.error(
         `[portfolio] Wallet fetch failed: chain=${w.chain}`,
         err instanceof Error ? err.message : "unknown"
@@ -101,16 +118,17 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch wallet balances",
       });
       return null;
-    }
-  });
+    })
+  );
 
-  const [exchangeResults, walletResults] = await Promise.all([
-    Promise.all(exchangePromises),
-    Promise.all(walletPromises),
-  ]);
+  const results = await Promise.all([...exchangePromises, ...walletPromises]);
 
-  const snapshots = exchangeResults.filter((s): s is PortfolioSnapshot => s !== null);
-  const walletSnapshots = walletResults.filter((s): s is WalletSnapshot => s !== null);
+  const snapshots = results
+    .slice(0, connections.length)
+    .filter((s): s is PortfolioSnapshot => s !== null && "exchange" in s);
+  const walletSnapshots = results
+    .slice(connections.length)
+    .filter((s): s is WalletSnapshot => s !== null && "address" in s);
 
   const context = generatePortfolioContext(snapshots, walletSnapshots);
   const totalUsdValue =

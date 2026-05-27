@@ -17,7 +17,7 @@ export interface WalletSnapshot {
 }
 
 /** Timeout for external HTTP calls (CoinGecko, RPC) — keep low for Vercel serverless */
-const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_TIMEOUT_MS = 5_000;
 
 async function fetchNativePriceUsd(coingeckoId: string): Promise<number> {
   const ids: Record<string, string> = {
