@@ -57,3 +57,14 @@ html {
 ::selection {
   background: rgba(16, 185, 129, 0.3);
 }
+
+/* Override browser autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #18181b inset !important;
+  -webkit-text-fill-color: #e4e4e7 !important;
+  border-color: rgba(63, 63, 70, 0.5) !important;
+  caret-color: #e4e4e7;
+}
