@@ -41,6 +41,9 @@ export default function DashboardPage() {
   // MCP token
   const [mcpToken, setMcpToken] = useState("");
   const [generatingToken, setGeneratingToken] = useState(false);
+  const [tokenName, setTokenName] = useState("Claude Code");
+  const [tokenPermission, setTokenPermission] = useState("full");
+  const [showTokenForm, setShowTokenForm] = useState(false);
   const [existingTokens, setExistingTokens] = useState<
     Array<{
       id: string;
@@ -158,14 +161,37 @@ export default function DashboardPage() {
       const res = await fetch("/api/mcp/tokens", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "Claude Code", permissionLevel: "full" }),
+        body: JSON.stringify({ name: tokenName, permissionLevel: tokenPermission }),
       });
       const data = await res.json();
       if (res.ok) {
         setMcpToken(data.token);
+        setShowTokenForm(false);
+        const tokensRes = await fetch("/api/mcp/tokens");
+        if (tokensRes.ok) {
+          const tokensData = await tokensRes.json();
+          setExistingTokens(tokensData.tokens ?? []);
+        }
       }
     } finally {
       setGeneratingToken(false);
+    }
+  }
+
+  async function handleRevokeToken(tokenId: string) {
+    try {
+      const res = await fetch("/api/mcp/tokens", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: tokenId }),
+      });
+      if (res.ok) {
+        setExistingTokens((prev) =>
+          prev.map((t) => (t.id === tokenId ? { ...t, revoked: true } : t))
+        );
+      }
+    } catch {
+      // non-critical
     }
   }
 
@@ -301,6 +327,7 @@ export default function DashboardPage() {
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   required
+                  autoComplete="off"
                   placeholder="Your read-only API key"
                   className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition"
                 />
@@ -312,6 +339,7 @@ export default function DashboardPage() {
                   value={secret}
                   onChange={(e) => setSecret(e.target.value)}
                   required
+                  autoComplete="new-password"
                   placeholder="Your API secret"
                   className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition"
                 />
@@ -514,22 +542,71 @@ export default function DashboardPage() {
                   <span className="text-zinc-300">&quot;</span>
                 </div>
               </div>
+
+              <button
+                onClick={() => setMcpToken("")}
+                className="text-xs text-zinc-500 hover:text-zinc-300 transition"
+              >
+                Done
+              </button>
+            </div>
+          ) : showTokenForm ? (
+            <div className="mt-4 glass rounded-xl p-5 space-y-4">
+              <div>
+                <label className="block text-sm text-zinc-400 mb-1.5">Token name</label>
+                <input
+                  type="text"
+                  value={tokenName}
+                  onChange={(e) => setTokenName(e.target.value)}
+                  placeholder="e.g. Claude Code, Cursor, My Agent"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-zinc-400 mb-1.5">Permission level</label>
+                <select
+                  value={tokenPermission}
+                  onChange={(e) => setTokenPermission(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition appearance-none"
+                >
+                  <option value="full">Full — all portfolio data with USD values</option>
+                  <option value="portfolio_only">Portfolio only — holdings without context</option>
+                  <option value="anonymized">Anonymized — hide USD values</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleGenerateToken}
+                  disabled={generatingToken || !tokenName.trim()}
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-900/20 flex items-center gap-2"
+                >
+                  {generatingToken ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate"
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowTokenForm(false)}
+                  className="text-xs text-zinc-500 hover:text-zinc-300 transition"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           ) : (
             <button
-              onClick={handleGenerateToken}
-              disabled={generatingToken || connections.length === 0}
+              onClick={() => connections.length > 0 && setShowTokenForm(true)}
+              disabled={connections.length === 0}
               className="mt-4 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-900/20 flex items-center gap-2"
             >
-              {generatingToken ? (
-                <>
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Generating...
-                </>
-              ) : connections.length === 0 ? (
+              {connections.length === 0 ? (
                 <>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -539,44 +616,57 @@ export default function DashboardPage() {
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
-                  Generate MCP token
+                  New MCP token
                 </>
               )}
             </button>
           )}
 
           {/* Existing tokens list */}
-          {existingTokens.filter((t) => !t.revoked).length > 0 && (
+          {existingTokens.length > 0 && (
             <div className="mt-6">
-              <h3 className="text-sm font-medium text-zinc-400">Active tokens</h3>
+              <h3 className="text-sm font-medium text-zinc-400">Tokens</h3>
               <div className="mt-2 space-y-2">
-                {existingTokens
-                  .filter((t) => !t.revoked)
-                  .map((token) => (
-                    <div
-                      key={token.id}
-                      className="glass rounded-xl p-3.5 flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
-                          <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium">{token.name}</span>
-                          <span className="ml-2 text-xs text-zinc-600 bg-zinc-800/50 px-2 py-0.5 rounded-full">
-                            {token.permission_level}
-                          </span>
-                        </div>
+                {existingTokens.map((token) => (
+                  <div
+                    key={token.id}
+                    className={`glass rounded-xl p-3.5 flex items-center justify-between group ${token.revoked ? "opacity-50" : ""}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                        </svg>
                       </div>
-                      <span className="text-xs text-zinc-600">
-                        Created {new Date(token.created_at).toLocaleDateString()}
-                      </span>
+                      <div>
+                        <span className="text-sm font-medium">{token.name}</span>
+                        <span className="ml-2 text-xs text-zinc-600 bg-zinc-800/50 px-2 py-0.5 rounded-full">
+                          {token.permission_level}
+                        </span>
+                        {token.revoked && (
+                          <span className="ml-2 text-xs text-red-400/70 bg-red-500/10 px-2 py-0.5 rounded-full">
+                            revoked
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-zinc-600">
+                        {new Date(token.created_at).toLocaleDateString()}
+                      </span>
+                      {!token.revoked && (
+                        <button
+                          onClick={() => handleRevokeToken(token.id)}
+                          className="text-xs text-zinc-700 hover:text-red-400 transition opacity-0 group-hover:opacity-100"
+                        >
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

@@ -2,6 +2,7 @@
  * MCP Token management.
  * POST: Create a new token
  * GET: List user's tokens
+ * PATCH: Revoke a token
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,6 +13,7 @@ import {
   RATE_LIMITS,
   getClientIp,
   validateTokenName,
+  validateUUID,
 } from "@/lib/security";
 
 function hashToken(token: string): string {
@@ -131,4 +133,44 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json({ tokens: data });
+}
+
+export async function PATCH(request: NextRequest) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const tokenId = body.id as string;
+  const idError = validateUUID(tokenId);
+  if (idError) {
+    return NextResponse.json({ error: idError }, { status: 400 });
+  }
+
+  const { error } = await supabase
+    .from("mcp_tokens")
+    .update({ revoked: true })
+    .eq("id", tokenId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("[tokens] Failed to revoke token:", error.message);
+    return NextResponse.json(
+      { error: "Failed to revoke token" },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ success: true });
 }
