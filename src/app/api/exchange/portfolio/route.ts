@@ -15,6 +15,9 @@ import {
   sanitizeExchangeError,
 } from "@/lib/security";
 
+/** Portfolio fetch can be slow for users with many assets across exchanges */
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   // Rate limiting
   const ip = getClientIp(request.headers);

@@ -15,6 +15,9 @@ import { fetchPortfolio, type SupportedExchange, type ExchangeCredentials, type 
 import { generatePortfolioContext } from "@/lib/context";
 import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/security";
 
+/** MCP fetches across all connected exchanges — needs more time */
+export const maxDuration = 60;
+
 // Use service role for MCP endpoint (no cookie auth needed)
 function createServiceClient() {
   return createServerClient(

@@ -135,7 +135,7 @@ export default function DashboardPage() {
       setPassphrase("");
       setShowConnect(false);
 
-      // Refresh
+      // Refresh connections list
       const supabase = createClient();
       const { data: conns } = await supabase
         .from("connections")
@@ -143,7 +143,8 @@ export default function DashboardPage() {
         .eq("user_id", user!.id);
       setConnections(conns ?? []);
 
-      await fetchPortfolio();
+      // Auto-fetch portfolio (deferred from connect to avoid timeout)
+      fetchPortfolio();
     } catch {
       setConnectError("Something went wrong");
     } finally {

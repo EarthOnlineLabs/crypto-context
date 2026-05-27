@@ -1,13 +1,17 @@
 /**
  * POST /api/exchange/connect
  * Connect a new exchange with read-only API key.
- * Validates the key, stores encrypted, fetches initial portfolio.
+ * Validates the key, stores encrypted.
+ *
+ * Performance: verifyReadOnly alone takes ~2s (loadMarkets + fetchBalance).
+ * Portfolio fetch is deferred to the dashboard sync button to avoid
+ * hitting Vercel's 10s function timeout with ticker calls per asset.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { verifyReadOnly, fetchPortfolio, PASSPHRASE_EXCHANGES, type SupportedExchange } from "@/lib/exchange";
-import { saveConnection, saveSnapshot } from "@/lib/store";
+import { verifyReadOnly, PASSPHRASE_EXCHANGES, type SupportedExchange } from "@/lib/exchange";
+import { saveConnection } from "@/lib/store";
 import {
   checkRateLimit,
   RATE_LIMITS,
@@ -16,8 +20,10 @@ import {
   validateSecret,
   validatePassphrase,
   validateLabel,
-  sanitizeExchangeError,
 } from "@/lib/security";
+
+/** Extend Vercel function timeout to 30s for exchanges with many markets */
+export const maxDuration = 30;
 
 const SUPPORTED_EXCHANGES: SupportedExchange[] = [
   "binance", "okx", "bybit", "coinbase",
@@ -55,7 +61,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Parse body with size guard
+  // Parse body
   let body: Record<string, unknown>;
   try {
     body = await request.json();
@@ -123,7 +129,6 @@ export async function POST(request: NextRequest) {
   });
 
   if (!verification.valid) {
-    // verifyReadOnly already returns sanitized error messages
     return NextResponse.json(
       { error: verification.error ?? "Invalid API key" },
       { status: 400 }
@@ -131,38 +136,28 @@ export async function POST(request: NextRequest) {
   }
 
   // Step 2: Save encrypted connection
-  const connectionId = await saveConnection(
-    user.id,
-    exchangeId,
-    { apiKey: apiKey.trim(), secret: secret.trim(), password: password?.trim() },
-    label?.trim() ?? `${exchangeId} account`
-  );
-
-  // Step 3: Fetch initial portfolio
   try {
-    const snapshot = await fetchPortfolio(exchangeId, {
-      apiKey: apiKey.trim(),
-      secret: secret.trim(),
-      password: password?.trim(),
-    });
-    await saveSnapshot(user.id, connectionId, snapshot);
+    const connectionId = await saveConnection(
+      user.id,
+      exchangeId,
+      { apiKey: apiKey.trim(), secret: secret.trim(), password: password?.trim() },
+      label?.trim() ?? `${exchangeId} account`
+    );
 
-    return NextResponse.json({
-      success: true,
-      connectionId,
-      portfolio: {
-        exchange: snapshot.exchange,
-        totalUsdValue: snapshot.totalUsdValue,
-        holdingsCount: snapshot.holdings.length,
-      },
-    });
-  } catch {
-    // Connection saved but initial fetch failed — that's OK
+    // Portfolio fetch is deferred — the dashboard will trigger it via
+    // the "Sync now" button or on page load. This keeps the connect
+    // endpoint fast and avoids Vercel timeout with large portfolios.
     return NextResponse.json({
       success: true,
       connectionId,
       portfolio: null,
-      warning: "Exchange connected but initial portfolio fetch failed. Will retry.",
+      message: "Exchange connected successfully. Syncing portfolio...",
     });
+  } catch (err) {
+    console.error(`[connect] Failed to save connection: ${err instanceof Error ? err.message : "unknown"}`);
+    return NextResponse.json(
+      { error: "Failed to save connection. Please try again." },
+      { status: 500 }
+    );
   }
 }
