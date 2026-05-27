@@ -23,7 +23,7 @@
 | MCP 鉴权拒绝 | ✅ 正常 | 无/无效/已撤销 token 均正确拒绝 |
 | 安全加固 | ✅ 已实施 | 7 种安全响应头、速率限制、输入校验、错误脱敏 |
 | 前端 Light Theme | ✅ 完成 | 全站白色主题，浏览器验证 |
-| 钱包追踪 (V1.1) | ✅ 代码就绪 | 5 条 EVM 链支持，需实际钱包地址测试 |
+| 钱包追踪 (V1.1) | ✅ 已修复 | 5 条 EVM 链支持，已修复 504 超时和无数据 bug |
 
 ### V1.1 新增功能
 
@@ -55,6 +55,13 @@
 | 其他 9 家交易所 | 代码已就绪，需各交易所 API key 实际测试 |
 | 钱包追踪 | 代码已就绪，需输入实际钱包地址测试 |
 | 多源聚合 | 交易所 + 钱包聚合逻辑已就绪，需多数据源实测 |
+
+### 🔧 V1.1 Bug 修复记录
+
+1. **钱包数据不显示**：`fetchWalletPortfolio` 使用 `{ next: { revalidate: 300 } }` 在 Route Handler 无效导致抛错，所有 CoinGecko 请求静默失败 → 改用 `cache: 'no-store'` + `AbortSignal.timeout`
+2. **504 Gateway Timeout**：交易所和钱包 portfolio 串行获取导致超时（45-60s），Vercel 返回 504 → 全部改为 `Promise.all` 并行获取
+3. **RPC 无超时**：viem `http()` 无超时参数，公共 RPC 可能无限挂起 → 添加 10s 显式超时
+4. **getBalance + multicall 串行**：两个独立 RPC 调用不必要串行 → 改为 `Promise.all` 并行
 
 ### 🔧 已知限制
 
