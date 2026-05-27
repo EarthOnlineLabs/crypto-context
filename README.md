@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CryptoContext
 
-## Getting Started
+Your portfolio context, everywhere. A personal crypto context layer that connects your exchange positions to any AI agent via MCP protocol.
 
-First, run the development server:
+**Live**: https://app-rho-jet-70.vercel.app
+
+## What it does
+
+1. **Connect** your exchanges (Binance, OKX, Bybit, Coinbase) with read-only API keys
+2. **Context is auto-generated** — portfolio, allocation, concentration structured into clean markdown
+3. **AI agents query via MCP** — add one line to Claude Code or Cursor, and your AI already knows what you hold
+
+## MCP Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+claude mcp add --transport http crypto-ctx \
+  https://app-rho-jet-70.vercel.app/api/mcp \
+  --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Works with Claude Code, Cursor, and any MCP-compatible agent.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Component | Solution | Cost |
+|-----------|----------|------|
+| Frontend + API | Next.js 16 (App Router) | Free (Vercel) |
+| Database + Auth | Supabase (PostgreSQL + RLS) | Free |
+| Exchange Data | CCXT (open source) | Free |
+| MCP Protocol | HTTP Transport, JSON-RPC 2.0 | - |
+| API Key Encryption | AES-256-GCM | - |
 
-## Learn More
+**Total: $0/month**
 
-To learn more about Next.js, take a look at the following resources:
+## Security
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Read-only API keys only — cannot trade or withdraw
+- Keys encrypted with AES-256-GCM before storage
+- MCP tokens hashed with SHA-256 (never stored in plaintext)
+- Row Level Security on all database tables
+- All data transmitted over TLS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Local Development
 
-## Deploy on Vercel
+```bash
+cp .env.example .env.local
+# Fill in your Supabase credentials and encryption key
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## MCP API
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Discovery (GET /api/mcp)
+
+Returns server info and available tools.
+
+### Tools (POST /api/mcp)
+
+| Tool | Description |
+|------|-------------|
+| `get_portfolio` | Current holdings with USD values and allocation % |
+| `get_context` | Relevant context for a query (portfolio + analysis) |
+
+Auth: `Authorization: Bearer <mcp_token>`
+
+## License
+
+MIT
