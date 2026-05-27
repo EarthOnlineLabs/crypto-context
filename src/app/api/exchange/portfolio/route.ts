@@ -64,22 +64,16 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const snapshots: PortfolioSnapshot[] = [];
-  const walletSnapshots: WalletSnapshot[] = [];
   const errors: { source: string; error: string }[] = [];
 
-  // Fetch exchange portfolios
-  for (const conn of connections) {
+  // Fetch ALL exchange + wallet portfolios in parallel
+  const exchangePromises = connections.map(async (conn) => {
     const creds = await getConnectionCredentials(conn.id, user.id);
-    if (!creds) continue;
-
+    if (!creds) return null;
     try {
-      const snapshot = await fetchPortfolio(
-        creds.exchange,
-        creds.credentials
-      );
-      snapshots.push(snapshot);
+      const snapshot = await fetchPortfolio(creds.exchange, creds.credentials);
       await saveSnapshot(user.id, conn.id, snapshot);
+      return snapshot;
     } catch (err) {
       const rawMessage = err instanceof Error ? err.message : String(err);
       console.error(`[portfolio] Failed to fetch ${conn.exchange}: ${rawMessage}`);
@@ -87,17 +81,16 @@ export async function GET(request: NextRequest) {
         source: conn.exchange,
         error: sanitizeExchangeError(rawMessage, conn.exchange),
       });
+      return null;
     }
-  }
+  });
 
-  // Fetch wallet portfolios
-  for (const w of wallets) {
+  const walletPromises = wallets.map(async (w) => {
     try {
-      const snapshot = await fetchWalletPortfolio(
+      return await fetchWalletPortfolio(
         w.address as `0x${string}`,
         w.chain as SupportedChain
       );
-      walletSnapshots.push(snapshot);
     } catch (err) {
       console.error(
         `[portfolio] Wallet fetch failed: chain=${w.chain}`,
@@ -107,8 +100,17 @@ export async function GET(request: NextRequest) {
         source: `${w.chain}:${w.address.slice(0, 10)}...`,
         error: "Failed to fetch wallet balances",
       });
+      return null;
     }
-  }
+  });
+
+  const [exchangeResults, walletResults] = await Promise.all([
+    Promise.all(exchangePromises),
+    Promise.all(walletPromises),
+  ]);
+
+  const snapshots = exchangeResults.filter((s): s is PortfolioSnapshot => s !== null);
+  const walletSnapshots = walletResults.filter((s): s is WalletSnapshot => s !== null);
 
   const context = generatePortfolioContext(snapshots, walletSnapshots);
   const totalUsdValue =
