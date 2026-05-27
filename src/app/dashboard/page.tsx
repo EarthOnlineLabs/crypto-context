@@ -148,6 +148,27 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleDisconnect(connectionId: string) {
+    if (!confirm("Disconnect this exchange? This will delete the stored API key.")) {
+      return;
+    }
+    try {
+      const res = await fetch("/api/exchange/disconnect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connectionId }),
+      });
+      if (res.ok) {
+        setConnections((prev) => prev.filter((c) => c.id !== connectionId));
+        if (connections.length <= 1) {
+          setPortfolio(null);
+        }
+      }
+    } catch {
+      // silently fail
+    }
+  }
+
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/");
@@ -290,10 +311,18 @@ export default function DashboardPage() {
                       {c.label}
                     </span>
                   </div>
-                  <span className="text-xs text-zinc-600">
-                    Connected{" "}
-                    {new Date(c.created_at).toLocaleDateString()}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-zinc-600">
+                      Connected{" "}
+                      {new Date(c.created_at).toLocaleDateString()}
+                    </span>
+                    <button
+                      onClick={() => handleDisconnect(c.id)}
+                      className="text-xs text-zinc-600 hover:text-red-400 transition"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
