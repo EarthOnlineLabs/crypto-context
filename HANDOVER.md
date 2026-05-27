@@ -23,7 +23,7 @@
 | MCP 鉴权拒绝 | ✅ 正常 | 无/无效/已撤销 token 均正确拒绝 |
 | 安全加固 | ✅ 已实施 | 7 种安全响应头、速率限制、输入校验、错误脱敏 |
 | 前端 Light Theme | ✅ 完成 | 全站白色主题，浏览器验证 |
-| 钱包追踪 (V1.1) | ✅ 已修复 | 5 条 EVM 链支持，已修复 504 超时和无数据 bug |
+| 钱包追踪 (V1.1) | ✅ 已验证 | 5 条 EVM 链支持，钱包数据已出现在 Portfolio 中（ETH + USDT） |
 
 ### V1.1 新增功能
 
@@ -60,8 +60,12 @@
 
 1. **钱包数据不显示**：`fetchWalletPortfolio` 使用 `{ next: { revalidate: 300 } }` 在 Route Handler 无效导致抛错，所有 CoinGecko 请求静默失败 → 改用 `cache: 'no-store'` + `AbortSignal.timeout`
 2. **504 Gateway Timeout**：交易所和钱包 portfolio 串行获取导致超时（45-60s），Vercel 返回 504 → 全部改为 `Promise.all` 并行获取
-3. **RPC 无超时**：viem `http()` 无超时参数，公共 RPC 可能无限挂起 → 添加 10s 显式超时
+3. **RPC 无超时**：viem `http()` 无超时参数，公共 RPC 可能无限挂起 → 添加 5s 显式超时
 4. **getBalance + multicall 串行**：两个独立 RPC 调用不必要串行 → 改为 `Promise.all` 并行
+5. **Dashboard 加载阻塞**：`await fetchPortfolio()` 阻塞整个 dashboard 渲染 → 改为非阻塞，dashboard 立即显示，portfolio 后台加载
+6. **默认 RPC 不可用**：viem 默认 Cloudflare Ethereum RPC 从 Vercel serverless 超时 → 切换到 PublicNode 免费 RPC（~1.5s 响应）
+7. **Ankr 需要 API Key**：Ankr 公共 RPC 已改为需要 API key → 使用 PublicNode（无需 API key）
+8. **per-source timeout**：为每个数据源添加独立超时（交易所 20s，钱包 15s），确保部分数据源失败时仍返回可用数据
 
 ### 🔧 已知限制
 
@@ -70,7 +74,7 @@
 3. **get_context 工具**：V1 返回全量 portfolio，语义检索待后续
 4. **CoinGecko 免费限制**：30 次/分钟，大量钱包可能触发限流
 5. **ERC-20 覆盖**：每条链预置 3-6 种主流代币，长尾代币需手动添加
-6. **公共 RPC**：使用 viem 默认公共 RPC，高并发可能不稳定
+6. **公共 RPC**：使用 PublicNode 免费公共 RPC，高并发可能不稳定（可切换到付费 RPC 提升可靠性）
 
 ## 基础设施
 
