@@ -5,12 +5,25 @@
 
 import ccxt, { type Exchange, type Balances } from "ccxt";
 
-export type SupportedExchange = "binance" | "okx" | "bybit" | "coinbase";
+export type SupportedExchange =
+  | "binance"
+  | "okx"
+  | "bybit"
+  | "coinbase"
+  | "kraken"
+  | "bitget"
+  | "kucoin"
+  | "gateio"
+  | "htx"
+  | "mexc";
+
+/** Exchanges that require a passphrase in addition to API key + secret */
+export const PASSPHRASE_EXCHANGES: SupportedExchange[] = ["okx", "bitget", "kucoin"];
 
 export interface ExchangeCredentials {
   apiKey: string;
   secret: string;
-  password?: string; // OKX requires passphrase
+  password?: string; // OKX, Bitget, KuCoin require passphrase
 }
 
 export interface PortfolioHolding {
@@ -33,6 +46,12 @@ const EXCHANGE_CLASSES: Record<SupportedExchange, new (config: object) => Exchan
   okx: ccxt.okx,
   bybit: ccxt.bybit,
   coinbase: ccxt.coinbase,
+  kraken: ccxt.kraken,
+  bitget: ccxt.bitget,
+  kucoin: ccxt.kucoin,
+  gateio: ccxt.gateio,
+  htx: ccxt.htx,
+  mexc: ccxt.mexc,
 };
 
 function createExchangeInstance(

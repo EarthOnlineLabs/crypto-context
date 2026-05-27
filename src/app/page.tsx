@@ -80,7 +80,7 @@ export default function Home() {
           <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
               { value: "$0", label: "Monthly cost" },
-              { value: "4", label: "Exchanges supported" },
+              { value: "10", label: "Exchanges supported" },
               { value: "<1s", label: "Context generation" },
               { value: "AES-256", label: "Encryption standard" },
             ].map((stat) => (
@@ -104,7 +104,7 @@ export default function Home() {
               {
                 step: "01",
                 title: "Connect exchanges",
-                desc: "Add your Binance, OKX, Bybit, or Coinbase with a read-only API key. We can never trade or withdraw.",
+                desc: "Add Binance, OKX, Bybit, Coinbase, Kraken, KuCoin, and more with a read-only API key. We can never trade or withdraw.",
                 icon: (
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.06a4.5 4.5 0 00-6.364-6.364L4.5 8.25a4.5 4.5 0 006.364 6.364l2.382-2.382" />

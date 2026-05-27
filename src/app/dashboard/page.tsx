@@ -119,7 +119,7 @@ export default function DashboardPage() {
           exchange,
           apiKey,
           secret,
-          password: exchange === "okx" ? passphrase : undefined,
+          password: passphraseExchanges.includes(exchange) ? passphrase : undefined,
         }),
       });
       const data = await res.json();
@@ -203,11 +203,19 @@ export default function DashboardPage() {
   }
 
   const exchangeIcons: Record<string, string> = {
-    binance: "B",
-    okx: "O",
+    binance: "BN",
+    okx: "OK",
     bybit: "BY",
     coinbase: "CB",
+    kraken: "KR",
+    bitget: "BG",
+    kucoin: "KC",
+    gateio: "GT",
+    htx: "HT",
+    mexc: "MX",
   };
+
+  const passphraseExchanges = ["okx", "bitget", "kucoin"];
 
   return (
     <div className="min-h-screen bg-grid relative">
@@ -275,6 +283,12 @@ export default function DashboardPage() {
                   <option value="okx">OKX</option>
                   <option value="bybit">Bybit</option>
                   <option value="coinbase">Coinbase</option>
+                  <option value="kraken">Kraken</option>
+                  <option value="bitget">Bitget</option>
+                  <option value="kucoin">KuCoin</option>
+                  <option value="gateio">Gate.io</option>
+                  <option value="htx">HTX</option>
+                  <option value="mexc">MEXC</option>
                 </select>
               </div>
               <div>
@@ -301,7 +315,7 @@ export default function DashboardPage() {
                   className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition"
                 />
               </div>
-              {exchange === "okx" && (
+              {passphraseExchanges.includes(exchange) && (
                 <div>
                   <label className="block text-sm text-zinc-400 mb-1.5">Passphrase</label>
                   <input
@@ -309,7 +323,7 @@ export default function DashboardPage() {
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     required
-                    placeholder="OKX API passphrase"
+                    placeholder={`${exchange.toUpperCase()} API passphrase`}
                     className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-700/50 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition"
                   />
                 </div>

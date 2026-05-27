@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { verifyReadOnly, fetchPortfolio, type SupportedExchange } from "@/lib/exchange";
+import { verifyReadOnly, fetchPortfolio, PASSPHRASE_EXCHANGES, type SupportedExchange } from "@/lib/exchange";
 import { saveConnection, saveSnapshot } from "@/lib/store";
 
 export async function POST(request: NextRequest) {
@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
   };
 
   // Validate input
-  const supported: SupportedExchange[] = ["binance", "okx", "bybit", "coinbase"];
+  const supported: SupportedExchange[] = [
+    "binance", "okx", "bybit", "coinbase",
+    "kraken", "bitget", "kucoin", "gateio", "htx", "mexc",
+  ];
   if (!supported.includes(exchange)) {
     return NextResponse.json(
       { error: `Unsupported exchange: ${exchange}. Supported: ${supported.join(", ")}` },
@@ -44,9 +47,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (exchange === "okx" && !password) {
+  if (PASSPHRASE_EXCHANGES.includes(exchange) && !password) {
+    const name = exchange.toUpperCase();
     return NextResponse.json(
-      { error: "OKX requires a passphrase" },
+      { error: `${name} requires a passphrase` },
       { status: 400 }
     );
   }
