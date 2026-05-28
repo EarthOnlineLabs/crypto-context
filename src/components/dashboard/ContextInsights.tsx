@@ -21,7 +21,7 @@ function TradingProfileCard({ doc }: { doc: ContextDoc }) {
   const tradesPerWeek = (meta.tradesPerWeek as number) ?? 0;
   const uniquePairs = (meta.uniquePairs as number) ?? 0;
   const hasOpenOrders = (meta.hasOpenOrders as boolean) ?? false;
-  const dateRange = (meta.dateRange as string) ?? "";
+  const dateRange = meta.dateRange as { from: string; to: string } | null;
 
   return (
     <div className="glass rounded-xl overflow-hidden">
@@ -61,7 +61,7 @@ function TradingProfileCard({ doc }: { doc: ContextDoc }) {
               </div>
             </div>
             {dateRange && (
-              <p className="text-xs text-gray-400 mb-3">Period: {dateRange}</p>
+              <p className="text-xs text-gray-400 mb-3">Period: {dateRange.from} to {dateRange.to}</p>
             )}
           </>
         )}
@@ -97,7 +97,7 @@ function FundFlowCard({ doc }: { doc: ContextDoc }) {
   const totalWithdrawals = (meta.totalWithdrawals as number) ?? 0;
   const totalTransfers = (meta.totalTransfers as number) ?? 0;
   const fundingPattern = (meta.fundingPattern as string) ?? "unknown";
-  const dateRange = (meta.dateRange as string) ?? "";
+  const dateRange = meta.dateRange as { from: string; to: string } | null;
 
   const patternLabels: Record<string, string> = {
     regular: "Regular (DCA-like)",
@@ -144,7 +144,7 @@ function FundFlowCard({ doc }: { doc: ContextDoc }) {
               </div>
             </div>
             {dateRange && (
-              <p className="text-xs text-gray-400 mb-3">Period: {dateRange}</p>
+              <p className="text-xs text-gray-400 mb-3">Period: {dateRange.from} to {dateRange.to}</p>
             )}
           </>
         )}
