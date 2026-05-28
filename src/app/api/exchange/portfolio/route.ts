@@ -135,6 +135,53 @@ export async function GET(request: NextRequest) {
     snapshots.reduce((sum, s) => sum + s.totalUsdValue, 0) +
     walletSnapshots.reduce((sum, s) => sum + s.totalUsdValue, 0);
 
+  const aggregated = new Map<string, { asset: string; amount: number; usdValue: number; sources: string[] }>();
+
+  for (const s of snapshots) {
+    for (const h of s.holdings) {
+      const existing = aggregated.get(h.asset);
+      if (existing) {
+        aggregated.set(h.asset, {
+          ...existing,
+          amount: existing.amount + h.total,
+          usdValue: existing.usdValue + (h.usdValue ?? 0),
+          sources: existing.sources.includes(s.exchange)
+            ? existing.sources
+            : [...existing.sources, s.exchange],
+        });
+      } else {
+        aggregated.set(h.asset, { asset: h.asset, amount: h.total, usdValue: h.usdValue ?? 0, sources: [s.exchange] });
+      }
+    }
+  }
+
+  for (const ws of walletSnapshots) {
+    for (const h of ws.holdings) {
+      const source = h.source;
+      const existing = aggregated.get(h.asset);
+      if (existing) {
+        aggregated.set(h.asset, {
+          ...existing,
+          amount: existing.amount + h.total,
+          usdValue: existing.usdValue + (h.usdValue ?? 0),
+          sources: existing.sources.includes(source)
+            ? existing.sources
+            : [...existing.sources, source],
+        });
+      } else {
+        aggregated.set(h.asset, { asset: h.asset, amount: h.total, usdValue: h.usdValue ?? 0, sources: [source] });
+      }
+    }
+  }
+
+  const holdings = Array.from(aggregated.values())
+    .filter((h) => h.usdValue >= 1)
+    .sort((a, b) => b.usdValue - a.usdValue)
+    .map((h) => ({
+      ...h,
+      allocation: totalUsdValue > 0 ? Number(((h.usdValue / totalUsdValue) * 100).toFixed(1)) : 0,
+    }));
+
   return NextResponse.json({
     snapshots: snapshots.map((s) => ({
       exchange: s.exchange,
@@ -149,6 +196,7 @@ export async function GET(request: NextRequest) {
       holdingsCount: s.holdings.length,
       fetchedAt: s.fetchedAt,
     })),
+    holdings,
     context,
     totalUsdValue,
     errors: errors.length > 0 ? errors : undefined,
