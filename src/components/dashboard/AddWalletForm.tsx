@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Alert, Button, Field, Input, Select } from "@/components/ui";
+import { WALLET_BRANDS } from "@/lib/wallets/brands";
 
 const CHAINS = [
   { id: "ethereum", name: "Ethereum" },
@@ -22,7 +23,7 @@ const EyeIcon = (
 );
 
 interface Props {
-  onConnect: (data: { address: string; chain: string; label: string }) => Promise<void>;
+  onConnect: (data: { address: string; chain: string; label: string; brand?: string }) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -30,6 +31,7 @@ export function AddWalletForm({ onConnect, onCancel }: Props) {
   const [address, setAddress] = useState("");
   const [chain, setChain] = useState("ethereum");
   const [label, setLabel] = useState("");
+  const [brand, setBrand] = useState("");
   const [error, setError] = useState("");
   const [connecting, setConnecting] = useState(false);
 
@@ -52,7 +54,7 @@ export function AddWalletForm({ onConnect, onCancel }: Props) {
     setConnecting(true);
 
     try {
-      await onConnect({ address: trimmed, chain, label });
+      await onConnect({ address: trimmed, chain, label, brand: brand || undefined });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add wallet");
     } finally {
@@ -78,6 +80,17 @@ export function AddWalletForm({ onConnect, onCancel }: Props) {
           {CHAINS.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
+            </option>
+          ))}
+        </Select>
+      </Field>
+
+      <Field label="Wallet app" hint="(optional)">
+        <Select value={brand} onChange={(e) => setBrand(e.target.value)}>
+          <option value="">Not specified</option>
+          {WALLET_BRANDS.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.name}
             </option>
           ))}
         </Select>

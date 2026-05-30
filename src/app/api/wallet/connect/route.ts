@@ -7,6 +7,7 @@ import {
   SUPPORTED_WALLET_CHAINS,
   type WalletChain,
 } from "@/lib/chains";
+import { WALLET_BRAND_IDS } from "@/lib/wallets/brands";
 import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/security";
 
 export const maxDuration = 10;
@@ -42,11 +43,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { address, chain, label } = body as {
+  const { address, chain, label, brand } = body as {
     address: string;
     chain: string;
     label?: string;
+    brand?: string;
   };
+
+  // Optional brand: accept only known ids from the registry, else store null.
+  const safeBrand = typeof brand === "string" && WALLET_BRAND_IDS.has(brand) ? brand : null;
 
   // Validate chain first so address validation can use the right format check.
   if (!chain || !SUPPORTED_WALLET_CHAINS.includes(chain as WalletChain)) {
@@ -69,12 +74,14 @@ export async function POST(request: NextRequest) {
       user.id,
       address,
       chain as WalletChain,
-      (label ?? "").trim().slice(0, 50)
+      (label ?? "").trim().slice(0, 50),
+      safeBrand
     );
     return NextResponse.json({
       id,
       address: normalizeWalletAddress(chain as WalletChain, address),
       chain,
+      brand: safeBrand,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";

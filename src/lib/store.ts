@@ -45,6 +45,7 @@ export interface StoredWallet {
   address: string;
   chain: WalletChain;
   label: string;
+  brand: string | null;
   created_at: string;
 }
 
@@ -54,14 +55,15 @@ export async function saveWallet(
   userId: string,
   address: string,
   chain: WalletChain,
-  label: string
+  label: string,
+  brand: string | null = null
 ): Promise<string> {
   const supabase = await createClient();
 
   // EVM addresses are lowercased for dedup; Solana base58 is case-sensitive.
   const { data, error } = await supabase
     .from("wallets")
-    .insert({ user_id: userId, address: normalizeWalletAddress(chain, address), chain, label })
+    .insert({ user_id: userId, address: normalizeWalletAddress(chain, address), chain, label, brand })
     .select("id")
     .single();
 

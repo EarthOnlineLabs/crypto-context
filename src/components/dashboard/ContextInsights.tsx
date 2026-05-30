@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ContextDoc } from "./types";
+import { formatDate } from "@/lib/timeAgo";
 
 interface Props {
   documents: ContextDoc[];
@@ -27,7 +28,7 @@ function TradingProfileCard({ doc }: { doc: ContextDoc }) {
           <h3 className="text-sm font-medium text-gray-700">Trading Profile</h3>
         </div>
         <span className="text-xs text-gray-400">
-          {new Date(doc.updatedAt).toLocaleDateString()}
+          {formatDate(doc.updatedAt)}
         </span>
       </div>
 
@@ -110,7 +111,7 @@ function FundFlowCard({ doc }: { doc: ContextDoc }) {
           <h3 className="text-sm font-medium text-gray-700">Fund Flow</h3>
         </div>
         <span className="text-xs text-gray-400">
-          {new Date(doc.updatedAt).toLocaleDateString()}
+          {formatDate(doc.updatedAt)}
         </span>
       </div>
 

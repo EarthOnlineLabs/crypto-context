@@ -5,12 +5,38 @@ import type { Connection, Wallet } from "./types";
 import { ConnectExchangeForm } from "./ConnectExchangeForm";
 import { AddWalletForm } from "./AddWalletForm";
 import { Button, Card, EmptyState, SectionHeader } from "@/components/ui";
+import { cn } from "@/lib/cn";
+import { formatDate } from "@/lib/timeAgo";
+import {
+  getExchangeBrand,
+  getChainBrand,
+  getWalletBrand,
+  resolveWalletStyle,
+  badgeBg,
+  badgeFg,
+  type BrandStyle,
+} from "@/lib/wallets/brands";
 
-const EXCHANGE_ICONS: Record<string, string> = {
-  binance: "BN", okx: "OK", bybit: "BY", coinbase: "CB", kraken: "KR",
-  bitget: "BG", kucoin: "KC", gateio: "GT", htx: "HT", mexc: "MX",
-  cryptocom: "CR", bingx: "BX", bitfinex: "BF", gemini: "GE", bitstamp: "BS", upbit: "UP",
-};
+/** Soft brand-tinted square + monogram. Logo-ready: swap monogram for an <img> later. */
+function IdentityBadge({ style }: { style: BrandStyle }) {
+  return (
+    <div
+      className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
+      style={{ backgroundColor: badgeBg(style.color), color: badgeFg(style.color) }}
+      aria-hidden="true"
+    >
+      {style.monogram}
+    </div>
+  );
+}
+
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium px-2 py-0.5 capitalize flex-shrink-0">
+      {children}
+    </span>
+  );
+}
 
 const PlusIcon = (
   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -44,7 +70,7 @@ interface Props {
   wallets: Wallet[];
   onConnectExchange: (data: { exchange: string; apiKey: string; secret: string; password?: string }) => Promise<void>;
   onDisconnectExchange: (id: string) => void;
-  onConnectWallet: (data: { address: string; chain: string; label: string }) => Promise<void>;
+  onConnectWallet: (data: { address: string; chain: string; label: string; brand?: string }) => Promise<void>;
   onDisconnectWallet: (id: string) => void;
 }
 
@@ -92,22 +118,22 @@ export function DataSources({
           />
         ) : connections.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {connections.map((c) => (
+            {connections.map((c) => {
+              const style = getExchangeBrand(c.exchange);
+              return (
               <Card
                 key={c.id}
                 className="p-4 flex items-center justify-between group transition hover:border-gray-300"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-sm flex-shrink-0">
-                    {EXCHANGE_ICONS[c.exchange] ?? c.exchange[0].toUpperCase()}
-                  </div>
+                  <IdentityBadge style={style} />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium capitalize text-sm text-gray-900">{c.exchange}</span>
+                      <span className="font-medium text-sm text-gray-900 truncate">{style.name}</span>
                       <ActiveDot />
                     </div>
                     <div className="text-xs text-gray-400 mt-0.5 truncate">
-                      {c.label} &middot; {new Date(c.created_at).toLocaleDateString()}
+                      {c.label} &middot; {formatDate(c.created_at)}
                     </div>
                   </div>
                 </div>
@@ -118,7 +144,8 @@ export function DataSources({
                   Disconnect
                 </button>
               </Card>
-            ))}
+              );
+            })}
           </div>
         ) : null}
       </div>
@@ -155,26 +182,33 @@ export function DataSources({
           />
         ) : wallets.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {wallets.map((w) => (
+            {wallets.map((w) => {
+              const style = resolveWalletStyle(w.brand, w.chain);
+              const chainName = getChainBrand(w.chain).name;
+              // Identity priority: user label → wallet-app brand → the address itself.
+              // The chain is demoted to a chip, and the address is always shown so two
+              // same-chain wallets are never indistinguishable.
+              const customName = (w.label && w.label.trim()) || getWalletBrand(w.brand)?.name || null;
+              const shortAddr = `${w.address.slice(0, 6)}…${w.address.slice(-4)}`;
+              return (
               <Card
                 key={w.id}
                 className="p-4 flex items-center justify-between group transition hover:border-gray-300"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-xs flex-shrink-0">
-                    {w.chain.slice(0, 3).toUpperCase()}
-                  </div>
+                  <IdentityBadge style={style} />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-gray-900 font-mono">
-                        {w.address.slice(0, 6)}...{w.address.slice(-4)}
+                      <span className={cn("font-medium text-sm text-gray-900 truncate", !customName && "font-mono")}>
+                        {customName ?? shortAddr}
                       </span>
                       <ActiveDot />
                     </div>
-                    <div className="text-xs text-gray-400 mt-0.5 truncate">
-                      <span className="capitalize">{w.chain}</span>
-                      {w.label && <> &middot; {w.label}</>} &middot;{" "}
-                      {new Date(w.created_at).toLocaleDateString()}
+                    <div className="flex items-center gap-1.5 mt-1 min-w-0">
+                      <Chip>{chainName}</Chip>
+                      {customName && (
+                        <span className="text-xs text-gray-400 font-mono truncate">{shortAddr}</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -185,7 +219,8 @@ export function DataSources({
                   Remove
                 </button>
               </Card>
-            ))}
+              );
+            })}
           </div>
         ) : null}
       </div>

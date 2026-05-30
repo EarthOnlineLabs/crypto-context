@@ -42,6 +42,8 @@ export interface Wallet {
   address: string;
   chain: string;
   label: string;
+  /** Optional self-custody wallet app id (e.g. 'metamask'); see lib/wallets/brands. */
+  brand?: string | null;
   created_at: string;
 }
 

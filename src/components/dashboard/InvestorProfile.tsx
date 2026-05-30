@@ -2,6 +2,7 @@
 
 import { useDashboard } from "./DashboardProvider";
 import { Spinner } from "@/components/ui";
+import { formatDate } from "@/lib/timeAgo";
 
 function SourceBadge({ source }: { source: "llm" | "deterministic" }) {
   if (source === "llm") {
@@ -82,11 +83,7 @@ export function InvestorProfile() {
             <div className="mb-2 flex items-center justify-between gap-3">
               <SourceBadge source={investorProfile.source} />
               <span className="text-[11px] text-gray-400">
-                {new Date(investorProfile.generatedAt).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+                {formatDate(investorProfile.generatedAt)}
               </span>
             </div>
             <p className="text-base leading-relaxed text-gray-800">{investorProfile.summary}</p>

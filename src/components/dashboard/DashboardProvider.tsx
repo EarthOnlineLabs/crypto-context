@@ -42,6 +42,7 @@ interface WalletInput {
   address: string;
   chain: string;
   label: string;
+  brand?: string;
 }
 
 interface DashboardContextValue {
@@ -418,6 +419,7 @@ export function DashboardProvider({
             address: data.address,
             chain: data.chain,
             label: data.label,
+            brand: data.brand ?? null,
             created_at: new Date().toISOString(),
           },
         ]);
@@ -435,7 +437,7 @@ export function DashboardProvider({
       const supabase = createClient();
       const { data: ws } = await supabase
         .from("wallets")
-        .select("id, address, chain, label, created_at")
+        .select("id, address, chain, label, brand, created_at")
         .eq("user_id", user!.id);
       setWallets(ws ?? []);
       toast.success("Wallet added");

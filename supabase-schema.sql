@@ -29,6 +29,7 @@ create table if not exists wallets (
   address text not null,
   chain text not null,
   label text not null default '',
+  brand text, -- optional self-custody wallet app id (e.g. 'metamask'); see migrations/0002
   created_at timestamptz default now() not null,
   unique(user_id, address, chain)
 );

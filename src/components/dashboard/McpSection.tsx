@@ -15,6 +15,7 @@ import {
   SectionHeader,
 } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { formatDate } from "@/lib/timeAgo";
 
 interface Props {
   tokens: McpToken[];
@@ -242,7 +243,7 @@ export function McpSection({ tokens, hasConnections, onGenerateToken, onRevokeTo
                       {token.revoked && <Badge tone="red">Revoked</Badge>}
                     </div>
                     <div className="text-xs text-gray-400 mt-0.5">
-                      Created {new Date(token.created_at).toLocaleDateString()}
+                      Created {formatDate(token.created_at)}
                     </div>
                   </div>
                 </div>
