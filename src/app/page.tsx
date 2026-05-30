@@ -48,56 +48,45 @@ export default function Home() {
 
       {/* Hero */}
       <main className="relative z-10">
-        <section className="max-w-6xl mx-auto px-6 pt-20 pb-12 sm:pt-28">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-xs text-emerald-700 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              MCP-native · Open source · $0 to run
-            </div>
+        <section className="max-w-5xl mx-auto px-6 pt-24 pb-14 sm:pt-32 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-xs text-emerald-700 mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            MCP-native · Open source · $0 to run
+          </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-gray-900">
-              Your AI gives generic advice
-              <br />
-              because it{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">
-                can&apos;t see your bags.
-              </span>
-            </h1>
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.04] text-gray-900">
+            Not your context,
+            <br />
+            <span className="text-gradient">not your AI.</span>
+          </h1>
 
-            <p className="mt-6 text-lg text-gray-500 max-w-xl leading-relaxed">
-              Your money is scattered across exchanges and wallets, so no AI knows
-              what you actually hold. CryptoContext unifies your entire crypto
-              footprint — every venue, plus how you trade — into one context that
-              any AI agent can query over MCP. You own it. You&apos;re never locked in.
-            </p>
+          <p className="mt-7 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            Your coins are scattered across exchanges and wallets, so every AI
+            gives you generic advice. CryptoContext unifies your whole footprint —
+            and how you trade — into one context any agent can query over MCP.
+          </p>
 
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link
-                href="/signup"
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-200/50 flex items-center gap-2"
-              >
-                Connect your portfolio
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 border border-gray-200 hover:border-gray-400 rounded-lg text-sm text-gray-500 hover:text-gray-900 transition flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                </svg>
-                Star on GitHub
-              </a>
-            </div>
-
-            <p className="mt-8 text-sm font-medium text-gray-400">
-              Not your context,{" "}
-              <span className="text-gray-900">not your AI.</span>
-            </p>
+          <div className="mt-10 flex flex-wrap gap-4 justify-center">
+            <Link
+              href="/signup"
+              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-200/50 flex items-center gap-2"
+            >
+              Connect your portfolio
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-gray-200 hover:border-gray-400 rounded-lg text-sm text-gray-500 hover:text-gray-900 transition flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+              </svg>
+              Star on GitHub
+            </a>
           </div>
         </section>
 
@@ -177,17 +166,17 @@ export default function Home() {
             {[
               {
                 title: "Built for AI, not for staring",
-                desc: "Your positions are structured into clean, queryable context an agent can actually reason over — concentration, allocation, risk flags — not a chart you have to interpret yourself.",
+                desc: "Your positions become clean, queryable context an agent can reason over — concentration, allocation, risk flags — not a chart you decode yourself.",
                 icon: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z",
               },
               {
                 title: "Knows how you trade",
-                desc: "Not just what you hold. It surfaces your trading patterns, DCA habits, fund flows and funding behavior — so advice is about you, not a generic textbook investor.",
+                desc: "Not just what you hold. It surfaces your trading patterns, DCA habits and fund flows — so advice is about you, not a textbook investor.",
                 icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z",
               },
               {
                 title: "Every venue, one picture",
-                desc: "Binance, Bybit, Coinbase, an Ethereum wallet, an Arbitrum wallet — unified into a single complete view. The whole point is that your AI finally sees all of it at once.",
+                desc: "Binance, Bybit, an Ethereum wallet, a Solana wallet — unified into one complete view. The point: your AI finally sees all of it at once.",
                 icon: "M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418",
               },
             ].map((item) => (
@@ -291,9 +280,9 @@ export default function Home() {
               <div className="text-xs font-mono text-gray-300 mb-3">START HERE</div>
               <h3 className="text-lg font-semibold text-gray-900">Paste a wallet address</h3>
               <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-                Wallet addresses are public data — zero risk, no API key. Drop in
-                any address (even a whale&apos;s) and watch an AI break it down
-                instantly. The fastest way to feel the difference.
+                Public data — zero risk, no API key. Drop in any address (even a
+                whale&apos;s) and watch an AI break it down instantly. The fastest
+                way to feel the difference.
               </p>
               <Link href="/signup" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-500 transition">
                 Try with a wallet
@@ -306,9 +295,9 @@ export default function Home() {
               <div className="text-xs font-mono text-emerald-400 mb-3">THE FULL PICTURE</div>
               <h3 className="text-lg font-semibold text-gray-900">Connect everything</h3>
               <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-                A single wallet is just one slice. The real value is the complete
-                view — every exchange and chain in one context, plus how you trade.
-                That&apos;s when your AI actually understands you as an investor.
+                A single wallet is one slice. The real value is the complete view —
+                every exchange and chain in one context, plus how you trade. That&apos;s
+                when your AI truly understands you as an investor.
               </p>
               <Link href="/signup" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-500 transition">
                 Connect exchanges + wallets
@@ -381,9 +370,9 @@ export default function Home() {
             </h2>
             <p className="mt-5 text-gray-500 leading-relaxed">
               Every app traps your data to keep you inside its walls. CryptoContext is
-              the opposite: an open, MCP-native layer you own and point at any AI
-              agent you choose. Switch from Claude to Cursor to the next thing — your
-              context comes with you. No lock-in, by design.
+              the opposite — an open, MCP-native layer you own and point at any agent.
+              Switch from Claude to Cursor to whatever&apos;s next; your context comes
+              with you.
             </p>
             <p className="mt-8 text-2xl font-bold text-gray-900">
               Not your context, not your AI.
