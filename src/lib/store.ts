@@ -398,3 +398,41 @@ export async function getInvestorProfile(
   }
   return data ? rowToInvestorProfile(data as InvestorProfileRow) : null;
 }
+
+// ---------- Strategy Notes (user-authored, one row per user) ----------
+
+/**
+ * Read the user's strategy notes. Returns "" when absent OR when the table isn't
+ * provisioned yet (pre-migration) — callers treat empty notes as a soft state.
+ */
+export async function getStrategyNotes(userId: string): Promise<string> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("strategy_notes")
+    .select("content")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[store] getStrategyNotes failed (table missing?):", error.message);
+    return "";
+  }
+  return (data?.content as string | undefined) ?? "";
+}
+
+/** Upsert the user's strategy notes (one freeform doc per user). */
+export async function upsertStrategyNotes(userId: string, content: string): Promise<void> {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("strategy_notes").upsert(
+    {
+      user_id: userId,
+      content,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" },
+  );
+
+  if (error) throw new Error(`Failed to save strategy notes: ${error.message}`);
+}

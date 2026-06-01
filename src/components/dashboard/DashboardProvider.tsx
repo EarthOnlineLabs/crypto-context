@@ -29,6 +29,7 @@ export interface DashboardMock {
   mcpTokens: McpToken[];
   contextDocs: ContextDoc[];
   investorProfile?: InvestorProfile | null;
+  notes?: string;
 }
 
 interface ExchangeInput {
@@ -53,6 +54,8 @@ interface DashboardContextValue {
   mcpTokens: McpToken[];
   contextDocs: ContextDoc[];
   investorProfile: InvestorProfile | null;
+  notes: string;
+  notesSaving: boolean;
   syncing: boolean;
   contextSyncing: boolean;
   profileGenerating: boolean;
@@ -67,6 +70,7 @@ interface DashboardContextValue {
   hasActiveToken: boolean;
   sync: () => void;
   generateProfile: () => void;
+  saveNotes: (content: string) => Promise<void>;
   connectExchange: (data: ExchangeInput) => Promise<void>;
   disconnectExchange: (id: string) => Promise<void>;
   connectWallet: (data: WalletInput) => Promise<void>;
@@ -126,6 +130,8 @@ export function DashboardProvider({
   const [investorProfile, setInvestorProfile] = useState<InvestorProfile | null>(
     mock?.investorProfile ?? null
   );
+  const [notes, setNotes] = useState(mock?.notes ?? "");
+  const [notesSaving, setNotesSaving] = useState(false);
   const [loading, setLoading] = useState(!isMock);
   const [syncing, setSyncing] = useState(false);
   const [contextSyncing, setContextSyncing] = useState(false);
@@ -290,6 +296,12 @@ export function DashboardProvider({
       fetch("/api/profile")
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => d && active && d.profile && setInvestorProfile(d.profile))
+        .catch(() => {});
+
+      // User-authored strategy notes (non-blocking).
+      fetch("/api/notes")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => d && active && typeof d.notes === "string" && setNotes(d.notes))
         .catch(() => {});
 
       setLoading(false);
@@ -571,6 +583,31 @@ export function DashboardProvider({
     router.push("/");
   }, [isMock, router, toast]);
 
+  const saveNotes = useCallback(
+    async (content: string) => {
+      setNotes(content); // keep provider state in sync with the editor
+      if (isMock) {
+        setNotesSaving(true);
+        setTimeout(() => setNotesSaving(false), 400);
+        return;
+      }
+      setNotesSaving(true);
+      try {
+        const res = await fetch("/api/notes", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content }),
+        });
+        if (!res.ok) toast.error("Failed to save notes. Please try again.");
+      } catch {
+        toast.error("Network error while saving notes.");
+      } finally {
+        setNotesSaving(false);
+      }
+    },
+    [isMock, toast]
+  );
+
   const value: DashboardContextValue = {
     user,
     connections,
@@ -579,6 +616,8 @@ export function DashboardProvider({
     mcpTokens,
     contextDocs,
     investorProfile,
+    notes,
+    notesSaving,
     syncing,
     contextSyncing,
     profileGenerating,
@@ -589,6 +628,7 @@ export function DashboardProvider({
     hasActiveToken: mcpTokens.some((t) => !t.revoked),
     sync,
     generateProfile,
+    saveNotes,
     connectExchange,
     disconnectExchange,
     connectWallet,

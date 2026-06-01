@@ -190,6 +190,7 @@ export function generateFullContext(
   portfolioMd: string,
   contextDocs: ContextDocument[],
   investorProfileMd?: string,
+  notesMd?: string,
 ): string {
   const sections: string[] = [];
 
@@ -201,6 +202,17 @@ export function generateFullContext(
   // agent should read first. Falls back gracefully when not yet generated.
   if (investorProfileMd && investorProfileMd.trim()) {
     sections.push(investorProfileMd.trim());
+    sections.push("");
+    sections.push("---");
+    sections.push("");
+  }
+
+  // Investor notes — the user's OWN words (thesis, rules, ideas to try). Placed right
+  // after the synthesized profile so an agent reads the user's stated intent early.
+  if (notesMd && notesMd.trim()) {
+    sections.push("# Investor Notes (in their words)");
+    sections.push("");
+    sections.push(notesMd.trim());
     sections.push("");
     sections.push("---");
     sections.push("");

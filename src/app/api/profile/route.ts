@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getContextDocuments, upsertInvestorProfile, getInvestorProfile } from "@/lib/store";
+import { getContextDocuments, upsertInvestorProfile, getInvestorProfile, getStrategyNotes } from "@/lib/store";
 import {
   generateInvestorProfile,
   type ProfileInput,
@@ -81,8 +81,12 @@ export async function POST(request: NextRequest) {
   const holdings = parseHoldings(body.holdings);
   const venues = parseVenues(body.venues);
 
-  // Pull the per-venue trading / fund-flow analyses we already computed during sync.
-  const docs = await getContextDocuments(user.id);
+  // Pull the per-venue trading / fund-flow analyses we already computed during sync,
+  // plus the user's own strategy notes (server-side — authoritative, not client-trusted).
+  const [docs, notes] = await Promise.all([
+    getContextDocuments(user.id),
+    getStrategyNotes(user.id),
+  ]);
   const tradingDocs = docs.filter((d) => d.dimension === "trading_profile").map((d) => d.content);
   const fundFlowDocs = docs.filter((d) => d.dimension === "fund_flow").map((d) => d.content);
 
@@ -94,6 +98,7 @@ export async function POST(request: NextRequest) {
     venues,
     tradingDocs,
     fundFlowDocs,
+    notes,
   };
 
   const profile = await generateInvestorProfile(input);

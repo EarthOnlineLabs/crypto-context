@@ -39,6 +39,8 @@ export interface ProfileInput {
   tradingDocs: string[];
   /** Pre-computed, sanitized per-venue fund-flow analyses (markdown). */
   fundFlowDocs: string[];
+  /** The user's own strategy notes (free text). Their stated thesis/plans. */
+  notes?: string;
 }
 
 export interface InvestorProfileData {
@@ -59,6 +61,7 @@ Rules:
 - If a section has no supporting data, say so briefly rather than guessing.
 - Be concrete and concise. No generic filler, no hype.
 - Do NOT give financial advice or price predictions.
+- If the user provided notes (their own stated thesis/plans), treat them as the user's intent: reflect them in preferences/behaviors/agentGuidance, and flag any tension between what they say and what the holdings actually show.
 
 Respond with ONLY a JSON object of this exact shape:
 {
@@ -134,6 +137,13 @@ export function buildFactsMarkdown(input: ProfileInput): string {
     lines.push("");
     lines.push("# Fund flow");
     lines.push(flows.join("\n\n"));
+  }
+
+  const notes = (input.notes ?? "").trim();
+  if (notes) {
+    lines.push("");
+    lines.push("# Investor Notes (the user's own words — their stated thesis/plans)");
+    lines.push(notes.slice(0, 8000));
   }
 
   return lines.join("\n");

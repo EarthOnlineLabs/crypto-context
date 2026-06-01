@@ -4,6 +4,7 @@ import { useState, type ComponentType } from "react";
 import { DashboardProvider } from "@/components/dashboard/DashboardProvider";
 import { AppShell } from "@/components/dashboard/AppShell";
 import OverviewPage from "@/app/dashboard/page";
+import NotesPage from "@/app/dashboard/notes/page";
 import SourcesPage from "@/app/dashboard/sources/page";
 import McpPage from "@/app/dashboard/mcp/page";
 import { cn } from "@/lib/cn";
@@ -11,6 +12,7 @@ import { populatedMock, emptyMock } from "./fixtures";
 
 const VIEWS: Record<string, ComponentType> = {
   "/dashboard": OverviewPage,
+  "/dashboard/notes": NotesPage,
   "/dashboard/sources": SourcesPage,
   "/dashboard/mcp": McpPage,
 };

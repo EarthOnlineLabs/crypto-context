@@ -218,7 +218,7 @@ async function handleCallTool(
   if (toolName === "get_context") {
     // Fetch cached context documents (trading profile, fund flow) + investor profile
     const supabase = createServiceClient();
-    const [{ data: contextDocs }, { data: profileRow }] = await Promise.all([
+    const [{ data: contextDocs }, { data: profileRow }, { data: notesRow }] = await Promise.all([
       supabase
         .from("context_documents")
         .select("dimension, content, updated_at")
@@ -226,6 +226,11 @@ async function handleCallTool(
       supabase
         .from("investor_profiles")
         .select("*")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      supabase
+        .from("strategy_notes")
+        .select("content")
         .eq("user_id", userId)
         .maybeSingle(),
     ]);
@@ -240,7 +245,9 @@ async function handleCallTool(
       ? renderProfileMarkdown(rowToInvestorProfile(profileRow as InvestorProfileRow))
       : undefined;
 
-    let result = generateFullContext(portfolioMd, docs, investorProfileMd);
+    const notesMd = (notesRow?.content as string | undefined) || undefined;
+
+    let result = generateFullContext(portfolioMd, docs, investorProfileMd, notesMd);
 
     if (permissionLevel === "anonymized") {
       result = result.replace(/\$[\d,]+/g, "$***");

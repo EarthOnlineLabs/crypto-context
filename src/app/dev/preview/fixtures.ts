@@ -138,6 +138,18 @@ export const populatedMock: DashboardMock = {
     generatedAt: minutesAgo(9),
     source: "llm",
   },
+  notes: `Core thesis: ETH is my long-term anchor — I don't sell the base position. BTC is a macro hedge, sized smaller.
+
+Rules I try to follow:
+- Only add to majors on 20%+ drawdowns; never market-buy into strength.
+- Keep at least 10% in stables as dry powder.
+- L2 governance tokens (ARB, OP) are a satellite sleeve, max ~15% combined.
+
+Ideas to try next:
+- Rotate a small slice of the memecoin churn into a SOL DeFi position.
+- Stop day-trading WIF/JUP — fees are eating the gains.
+
+What I want from an AI: hold me to the DCA discipline and flag when I'm drifting from these rules.`,
 };
 
 /** A brand-new account — drives the first-run onboarding + empty states. */

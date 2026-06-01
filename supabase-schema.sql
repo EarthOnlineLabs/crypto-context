@@ -134,6 +134,25 @@ create policy "Users update own investor_profile" on investor_profiles
 create policy "Users delete own investor_profile" on investor_profiles
   for delete using (auth.uid() = user_id);
 
+-- User-authored strategy notes (one freeform doc per user); see migrations/0003
+create table if not exists strategy_notes (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  content text not null default '',
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+alter table strategy_notes enable row level security;
+
+create policy "Users read own strategy_notes" on strategy_notes
+  for select using (auth.uid() = user_id);
+create policy "Users insert own strategy_notes" on strategy_notes
+  for insert with check (auth.uid() = user_id);
+create policy "Users update own strategy_notes" on strategy_notes
+  for update using (auth.uid() = user_id);
+create policy "Users delete own strategy_notes" on strategy_notes
+  for delete using (auth.uid() = user_id);
+
 -- Indexes
 create index if not exists idx_connections_user on connections(user_id);
 create index if not exists idx_snapshots_connection on snapshots(connection_id);
