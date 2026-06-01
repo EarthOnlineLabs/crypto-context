@@ -1,0 +1,101 @@
+<!--
+  CryptoContext — branded "Confirm signup" email.
+
+  This is the canonical, version-controlled copy of the Supabase Auth
+  "Confirm signup" template. It is pushed to Supabase via the Management API
+  (PATCH /v1/projects/{ref}/config/auth → mailer_templates_confirmation_content);
+  nothing in the app reads this file at runtime — it exists for review + history.
+
+  Supabase template variables used:
+    {{ .SiteURL }}    — the configured Site URL (prod origin)
+    {{ .TokenHash }}  — single-use confirmation token hash
+
+  The link targets our own /auth/confirm route (link flow), which calls
+  verifyOtp({ token_hash, type }) and redirects to the dashboard. This MUST stay
+  in sync with src/app/auth/confirm/route.ts and the signup page's "click the
+  link" copy.
+
+  Email-client constraints: table layout + inline styles only (no <style>
+  blocks, no external CSS, no JS, no web fonts). Tested against Gmail/Apple Mail
+  rendering rules.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f5f7;margin:0;padding:32px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;">
+        <!-- Brand bar -->
+        <tr>
+          <td style="padding:28px 32px 0 32px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="vertical-align:middle;">
+                  <span style="display:inline-block;width:22px;height:22px;background-color:#059669;border-radius:6px;vertical-align:middle;"></span>
+                </td>
+                <td style="vertical-align:middle;padding-left:10px;">
+                  <span style="font-size:17px;font-weight:700;letter-spacing:-0.01em;color:#111827;vertical-align:middle;">CryptoContext</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Heading + body -->
+        <tr>
+          <td style="padding:24px 32px 0 32px;">
+            <h1 style="margin:0;font-size:22px;line-height:1.3;font-weight:700;color:#111827;">Confirm your email</h1>
+            <p style="margin:14px 0 0 0;font-size:15px;line-height:1.6;color:#4b5563;">
+              You're almost set. Tap the button below to verify this address and finish setting up your portfolio context.
+            </p>
+          </td>
+        </tr>
+
+        <!-- CTA button -->
+        <tr>
+          <td style="padding:26px 32px 0 32px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background-color:#059669;border-radius:10px;">
+                  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup"
+                     style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">
+                    Confirm email address
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Fallback link -->
+        <tr>
+          <td style="padding:22px 32px 0 32px;">
+            <p style="margin:0;font-size:13px;line-height:1.5;color:#9ca3af;">
+              Or paste this link into your browser:
+            </p>
+            <p style="margin:6px 0 0 0;font-size:13px;line-height:1.5;word-break:break-all;">
+              <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup" style="color:#059669;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup</a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr>
+          <td style="padding:26px 32px 0 32px;">
+            <div style="border-top:1px solid #f0f1f3;height:1px;line-height:1px;font-size:1px;">&nbsp;</div>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:18px 32px 30px 32px;">
+            <p style="margin:0;font-size:12px;line-height:1.6;color:#9ca3af;">
+              You're receiving this because this address was used to sign up for CryptoContext. If it wasn't you, you can safely ignore this email — no account is created until the link is confirmed.
+            </p>
+            <p style="margin:14px 0 0 0;font-size:12px;font-weight:600;color:#6b7280;">
+              Not your context, not your AI.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
