@@ -45,6 +45,15 @@ Config of record:
   `smtp_admin_email=noreply@mail.earthonline.site`, `external_email_enabled=true`.
 - Keys (env only, never committed): `RESEND_API_KEY` (send-only → SMTP pass),
   `RESEND_ADMIN_API_KEY` (full-access → domain/log management).
+- **Link domain:** Supabase `site_url=https://cryptocontext.aiself.site` (so email
+  links / OAuth redirects are on a self-owned domain, not `*.vercel.app`).
+  `cryptocontext.aiself.site` is a Vercel domain on the `app` project (A record
+  `→76.76.21.21` in Aliyun). Chosen over an `earthonline.site` subdomain because
+  `aiself.site` lives in the same Vercel team as the project (no cross-team
+  domain-auth friction). `uri_allow_list` includes the new domain + the old
+  `*.vercel.app` + localhost. Templates use `{{ .SiteURL }}`, so changing
+  `site_url` switches every link automatically. Verified end-to-end (recovery
+  email link resolves to `cryptocontext.aiself.site/auth/confirm`, delivered).
 
 Replay (rebuild from scratch): create domain via API → add the 3 DNS records →
 `POST /domains/{id}/verify` → poll `GET /domains/{id}` until `verified` → PATCH
