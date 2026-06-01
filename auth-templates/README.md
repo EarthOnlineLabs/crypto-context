@@ -29,24 +29,28 @@ python3 -c "import json; print(json.dumps({
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data @-
 ```
 
-## Branded sending via Resend — runbook
-**Blocked on input:** a sending domain (e.g. `mail.<domain>`). `RESEND_API_KEY`
-is already provisioned (env only).
+## Branded sending via Resend — DONE (2026-06-01)
+Live: Supabase Auth sends via Resend SMTP from **CryptoContext
+<noreply@mail.earthonline.site>**, no rate cap (Resend free: 100/day, 3000/mo).
+Verified end-to-end (Resend log: `delivered`).
 
-1. **Add domain in Resend** (API): `POST https://api.resend.com/domains` `{ "name": "<domain>" }`
-   → returns SPF / DKIM / DMARC DNS records.
-2. **Add DNS records** at the registrar (founder action), then
-   **verify**: `POST https://api.resend.com/domains/{id}/verify` → poll until `verified`.
-3. **Point Supabase Auth at Resend SMTP** (Management API `PATCH …/config/auth`):
-   - `smtp_host: smtp.resend.com`, `smtp_port: 465`, `smtp_user: resend`,
-     `smtp_pass: <RESEND_API_KEY>`, `smtp_sender_name: CryptoContext`,
-     `smtp_admin_email: noreply@<domain>`, `external_email_enabled: true`.
-4. **Custom domain for links (recommended):** set `site_url` to the production
-   domain so confirmation links aren't on `*.vercel.app`. Add the domain to the
-   Vercel project + `uri_allow_list`.
-5. **Verify end-to-end:** sign up a test address → branded email from our domain,
-   link matches page copy, account activates.
+Config of record:
+- **Sending domain:** `mail.earthonline.site` — verified in Resend
+  (domain id `abb2d4d5-f348-45a8-bb3d-398fb8165fb4`). DNS on Aliyun/HiChina:
+  `resend._domainkey.mail` TXT (DKIM), `send.mail` MX→`feedback-smtp.us-east-1.amazonses.com`
+  (pri 10), `send.mail` TXT (`v=spf1 include:amazonses.com ~all`).
+- **Supabase SMTP** (`PATCH …/config/auth`): `smtp_host=smtp.resend.com`,
+  **`smtp_port="465"` (string — the API rejects a number)**, `smtp_user=resend`,
+  `smtp_pass=<RESEND_API_KEY>` (send-only key), `smtp_sender_name=CryptoContext`,
+  `smtp_admin_email=noreply@mail.earthonline.site`, `external_email_enabled=true`.
+- Keys (env only, never committed): `RESEND_API_KEY` (send-only → SMTP pass),
+  `RESEND_ADMIN_API_KEY` (full-access → domain/log management).
 
-## Other templates (follow the same pattern when ready)
-Magic link, recovery (reset password), email change — same link-flow structure
-and branding; not yet templated.
+Replay (rebuild from scratch): create domain via API → add the 3 DNS records →
+`POST /domains/{id}/verify` → poll `GET /domains/{id}` until `verified` → PATCH
+Supabase SMTP → trigger `POST /auth/v1/recover` and confirm in Resend's email log.
+
+Not done (optional follow-up): links still point at `*.vercel.app` (`site_url`
+unchanged — sender is branded, link host is not). Recovery / magic-link /
+email-change templates are still the plain defaults; only **confirm-signup** is
+branded. Same pattern applies when you want the rest.
