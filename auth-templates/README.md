@@ -50,7 +50,9 @@ Replay (rebuild from scratch): create domain via API → add the 3 DNS records �
 `POST /domains/{id}/verify` → poll `GET /domains/{id}` until `verified` → PATCH
 Supabase SMTP → trigger `POST /auth/v1/recover` and confirm in Resend's email log.
 
-Not done (optional follow-up): links still point at `*.vercel.app` (`site_url`
-unchanged — sender is branded, link host is not). Recovery / magic-link /
-email-change templates are still the plain defaults; only **confirm-signup** is
-branded. Same pattern applies when you want the rest.
+All auth email templates are branded (shared emerald shell): **confirm-signup**
+(pushed directly) plus **recovery, magic-link, email-change, invite,
+reauthentication** (via `build-templates.py` — the source of truth; re-run it to
+regenerate + re-push). Recovery now uses the token_hash → `/auth/confirm?type=
+recovery&next=/reset-password` flow (matches the signup flow and the app's
+confirm route; replaces the old `{{ .ConfirmationURL }}` link).
