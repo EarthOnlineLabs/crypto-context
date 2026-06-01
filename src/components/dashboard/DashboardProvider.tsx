@@ -71,6 +71,8 @@ interface DashboardContextValue {
   sync: () => void;
   generateProfile: () => void;
   saveNotes: (content: string) => Promise<void>;
+  /** Fetch the full assembled context markdown (for copy-paste / export). */
+  getFullContext: () => Promise<string>;
   connectExchange: (data: ExchangeInput) => Promise<void>;
   disconnectExchange: (id: string) => Promise<void>;
   connectWallet: (data: WalletInput) => Promise<void>;
@@ -108,6 +110,39 @@ function randomToken(): string {
   for (let i = 0; i < 48; i++) out += hex[Math.floor(Math.random() * 16)];
   return out;
 }
+
+/** Representative full-context markdown for the dev preview (fabricated). */
+const MOCK_FULL_CONTEXT = `# Crypto Investor Context
+
+# Investor Profile
+> A disciplined core-and-satellite crypto investor running an ETH-weighted base with a BTC hedge, then rotating a smaller satellite sleeve into L2 governance tokens.
+
+**Trading style:** Active but structured — ~12 maker-side trades a week around majors, with open limit orders rather than market chasing.
+**Risk posture:** Moderate. Top-3 assets hold ~71% of the book; stablecoin buffer ~12%.
+
+---
+
+# Investor Notes (in their words)
+Core thesis: ETH is my long-term anchor — I don't sell the base position. BTC is a macro hedge, sized smaller.
+Rules: only add to majors on 20%+ drawdowns; keep ≥10% in stables; L2 governance tokens max ~15% combined.
+Ideas to try: rotate a slice of the memecoin churn into SOL DeFi; stop day-trading WIF/JUP.
+
+---
+
+# Portfolio Snapshot
+> Total value: $96,800 (across 2 exchanges + 3 wallets)
+
+| Asset | Value | % | Location |
+|-------|-------|---|----------|
+| ETH | $30,008 | 31% | binance + ethereum |
+| BTC | $25,168 | 26% | binance + bybit |
+| SOL | $13,552 | 14% | bybit |
+| USDC | $11,616 | 12% | binance + arbitrum |
+
+---
+
+# Trading Profile
+- 247 trades across 18 pairs over 180 days; ~12/week, concentrated around ETH and majors.`;
 
 export function DashboardProvider({
   children,
@@ -608,6 +643,19 @@ export function DashboardProvider({
     [isMock, toast]
   );
 
+  const getFullContext = useCallback(async (): Promise<string> => {
+    if (isMock) return MOCK_FULL_CONTEXT;
+    try {
+      const res = await fetch("/api/context/full");
+      if (res.ok) return await res.text();
+      toast.error("Couldn't load your context. Please try again.");
+      return "";
+    } catch {
+      toast.error("Network error while loading your context.");
+      return "";
+    }
+  }, [isMock, toast]);
+
   const value: DashboardContextValue = {
     user,
     connections,
@@ -629,6 +677,7 @@ export function DashboardProvider({
     sync,
     generateProfile,
     saveNotes,
+    getFullContext,
     connectExchange,
     disconnectExchange,
     connectWallet,

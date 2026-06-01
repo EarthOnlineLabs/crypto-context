@@ -239,7 +239,7 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold text-center text-gray-900">One command to connect</h2>
-            <p className="mt-3 text-center text-gray-400 text-sm">Works with Claude Code, Cursor, and any MCP-compatible agent.</p>
+            <p className="mt-3 text-center text-gray-400 text-sm">Use it anywhere — over MCP, as a portable skill, or one-click copy-paste into ChatGPT, OpenClaw, and the rest.</p>
 
             <div className="code-block mt-8 rounded-xl overflow-hidden">
               <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200">

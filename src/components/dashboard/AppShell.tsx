@@ -48,7 +48,7 @@ const NAV: NavItem[] = [
   },
   {
     href: "/dashboard/mcp",
-    label: "MCP Connection",
+    label: "Connect",
     icon: (
       <path
         strokeLinecap="round"

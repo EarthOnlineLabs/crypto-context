@@ -3,6 +3,7 @@ export { AllocationChart } from "./AllocationChart";
 export { HoldingsTable } from "./HoldingsTable";
 export { DataSources } from "./DataSources";
 export { McpSection } from "./McpSection";
+export { ContextExport } from "./ContextExport";
 export { NotesSection } from "./NotesSection";
 export { ContextInsights } from "./ContextInsights";
 export { InvestorProfile } from "./InvestorProfile";
