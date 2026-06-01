@@ -90,7 +90,7 @@ export function useDashboard(): DashboardContextValue {
 function deriveLastSynced(portfolio: PortfolioData | null): Date | null {
   if (!portfolio) return null;
   const times = [
-    ...portfolio.snapshots.map((s) => s.fetchedAt),
+    ...(portfolio.snapshots ?? []).map((s) => s.fetchedAt),
     ...(portfolio.walletSnapshots?.map((w) => w.fetchedAt) ?? []),
   ]
     .map((t) => new Date(t).getTime())
@@ -585,7 +585,7 @@ export function DashboardProvider({
     lastSyncedAt,
     hasAnySources: connections.length > 0 || wallets.length > 0,
     hasExchanges: connections.length > 0,
-    hasPortfolio: !!portfolio && portfolio.holdings.length > 0,
+    hasPortfolio: !!portfolio && (portfolio.holdings?.length ?? 0) > 0,
     hasActiveToken: mcpTokens.some((t) => !t.revoked),
     sync,
     generateProfile,

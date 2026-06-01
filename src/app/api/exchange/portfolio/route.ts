@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       snapshots: [],
       walletSnapshots: [],
+      holdings: [],
       context: "# Portfolio\n\nNo exchanges or wallets connected yet.",
       totalUsdValue: 0,
     });

@@ -29,7 +29,7 @@ export default function OverviewPage() {
   const errors = portfolio?.errors ?? [];
 
   // --- Full portfolio view ---
-  if (portfolio && portfolio.holdings.length > 0) {
+  if (portfolio && (portfolio.holdings?.length ?? 0) > 0) {
     return (
       <div className="space-y-8">
         {!onboardingComplete && (
