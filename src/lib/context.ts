@@ -198,21 +198,22 @@ export function generateFullContext(
   sections.push(`> Generated: ${new Date().toISOString()}`);
   sections.push("");
 
-  // Investor profile is the headline — the holistic "who this investor is" that an
-  // agent should read first. Falls back gracefully when not yet generated.
-  if (investorProfileMd && investorProfileMd.trim()) {
-    sections.push(investorProfileMd.trim());
+  // Investor notes LEAD the context — the user's OWN words (thesis, rules, ideas to
+  // try). This is their explicit intent, so an agent should read it first, before the
+  // AI synthesis, and it must never be buried. Only included when the user has written it.
+  if (notesMd && notesMd.trim()) {
+    sections.push("# Investor Notes (the user's own strategy, in their words)");
+    sections.push("");
+    sections.push(notesMd.trim());
     sections.push("");
     sections.push("---");
     sections.push("");
   }
 
-  // Investor notes — the user's OWN words (thesis, rules, ideas to try). Placed right
-  // after the synthesized profile so an agent reads the user's stated intent early.
-  if (notesMd && notesMd.trim()) {
-    sections.push("# Investor Notes (in their words)");
-    sections.push("");
-    sections.push(notesMd.trim());
+  // Investor profile — the holistic AI synthesis of who this investor is.
+  // Falls back gracefully when not yet generated.
+  if (investorProfileMd && investorProfileMd.trim()) {
+    sections.push(investorProfileMd.trim());
     sections.push("");
     sections.push("---");
     sections.push("");

@@ -62,6 +62,7 @@ Rules:
 - Be concrete and concise. No generic filler, no hype.
 - Do NOT give financial advice or price predictions.
 - If the user provided notes (their own stated thesis/plans), treat them as the user's intent: reflect them in preferences/behaviors/agentGuidance, and flag any tension between what they say and what the holdings actually show.
+- LANGUAGE: Write every string VALUE in the same language the user predominantly writes their notes in. If the notes are in Chinese, write the entire profile in natural 简体中文; if in English (or there are no notes), use English. Always keep the JSON keys themselves in English.
 
 Respond with ONLY a JSON object of this exact shape:
 {

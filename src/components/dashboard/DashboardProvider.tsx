@@ -114,18 +114,18 @@ function randomToken(): string {
 /** Representative full-context markdown for the dev preview (fabricated). */
 const MOCK_FULL_CONTEXT = `# Crypto Investor Context
 
+# Investor Notes (the user's own strategy, in their words)
+Core thesis: ETH is my long-term anchor — I don't sell the base position. BTC is a macro hedge, sized smaller.
+Rules: only add to majors on 20%+ drawdowns; keep ≥10% in stables; L2 governance tokens max ~15% combined.
+Ideas to try: rotate a slice of the memecoin churn into SOL DeFi; stop day-trading WIF/JUP.
+
+---
+
 # Investor Profile
 > A disciplined core-and-satellite crypto investor running an ETH-weighted base with a BTC hedge, then rotating a smaller satellite sleeve into L2 governance tokens.
 
 **Trading style:** Active but structured — ~12 maker-side trades a week around majors, with open limit orders rather than market chasing.
 **Risk posture:** Moderate. Top-3 assets hold ~71% of the book; stablecoin buffer ~12%.
-
----
-
-# Investor Notes (in their words)
-Core thesis: ETH is my long-term anchor — I don't sell the base position. BTC is a macro hedge, sized smaller.
-Rules: only add to majors on 20%+ drawdowns; keep ≥10% in stables; L2 governance tokens max ~15% combined.
-Ideas to try: rotate a slice of the memecoin churn into SOL DeFi; stop day-trading WIF/JUP.
 
 ---
 

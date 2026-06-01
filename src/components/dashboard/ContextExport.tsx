@@ -48,6 +48,7 @@ export function ContextExport() {
   const { getFullContext, hasActiveToken } = useDashboard();
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
+  const [building, setBuilding] = useState(false);
 
   async function loadContext() {
     setLoading(true);
@@ -56,16 +57,26 @@ export function ContextExport() {
     setLoading(false);
   }
 
-  function downloadSkill() {
-    const blob = new Blob([buildSkillMd()], { type: "text/markdown;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "SKILL.md";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+  async function downloadSkill() {
+    setBuilding(true);
+    try {
+      // A skill is a named directory (crypto-context/SKILL.md), so download an
+      // installable package rather than a bare SKILL.md. jszip is lazy-loaded.
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      zip.file("crypto-context/SKILL.md", buildSkillMd());
+      const blob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "crypto-context.zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } finally {
+      setBuilding(false);
+    }
   }
 
   const tokenEst = Math.max(1, Math.round(context.length / 4));
@@ -118,12 +129,14 @@ export function ContextExport() {
           <div className="mt-4 flex-1 flex flex-col justify-end">
             {hasActiveToken ? (
               <>
-                <Button size="sm" onClick={downloadSkill}>
-                  Download SKILL.md
+                <Button size="sm" onClick={downloadSkill} loading={building}>
+                  Download skill (.zip)
                 </Button>
                 <p className="mt-2.5 text-xs text-gray-400 leading-relaxed">
-                  Then set <code className="font-mono text-gray-600">CRYPTO_CONTEXT_TOKEN</code> to a
-                  token from the section above — the skill keeps your token out of the file.
+                  Unzip <code className="font-mono text-gray-600">crypto-context.zip</code> into your
+                  skills folder (e.g. <code className="font-mono text-gray-600">~/.claude/skills/</code>),
+                  then set <code className="font-mono text-gray-600">CRYPTO_CONTEXT_TOKEN</code> to a
+                  token from above — the skill keeps your token out of the file.
                 </p>
               </>
             ) : (
