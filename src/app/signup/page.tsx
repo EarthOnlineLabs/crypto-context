@@ -108,7 +108,7 @@ export default function SignupPage() {
         <div className="glass rounded-xl p-6 sm:p-8">
           <h1 className="text-xl font-bold text-center text-gray-900">Create your account</h1>
           <p className="mt-1 text-sm text-gray-400 text-center">
-            Free forever. No credit card required.
+            Free. Open source. No credit card required.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">

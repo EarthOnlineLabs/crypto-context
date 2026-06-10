@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useDashboard } from "./DashboardProvider";
-import { Button, Card, SectionHeader, Textarea } from "@/components/ui";
+import { Button, Card, SectionHeader, Skeleton, Textarea } from "@/components/ui";
 
 const MAX = 20_000;
 
@@ -22,7 +22,7 @@ const InfoIcon = (
 );
 
 export function NotesSection() {
-  const { notes, notesSaving, saveNotes } = useDashboard();
+  const { notes, notesSaving, notesLoaded, saveNotes } = useDashboard();
   const [draft, setDraft] = useState(notes);
   const [dirty, setDirty] = useState(false);
   const lastSaved = useRef(notes);
@@ -76,17 +76,21 @@ export function NotesSection() {
         </p>
       </Card>
 
-      <Textarea
-        value={draft}
-        onChange={(e) => {
-          setDraft(e.target.value);
-          setDirty(true);
-        }}
-        rows={16}
-        placeholder={PLACEHOLDER}
-        maxLength={MAX}
-        aria-label="Strategy notes"
-      />
+      {notesLoaded ? (
+        <Textarea
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            setDirty(true);
+          }}
+          rows={16}
+          placeholder={PLACEHOLDER}
+          maxLength={MAX}
+          aria-label="Strategy notes"
+        />
+      ) : (
+        <Skeleton className="h-[22rem] w-full rounded-lg" />
+      )}
 
       <div className="mt-3 flex items-center justify-between">
         <span className="text-xs text-gray-400">

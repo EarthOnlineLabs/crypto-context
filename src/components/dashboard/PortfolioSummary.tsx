@@ -85,7 +85,7 @@ export function PortfolioSummary({ portfolio, syncing, contextSyncing, lastSynce
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {/* Hero — total value, elevated with gradient + glow + ring */}
-        <div className="relative overflow-hidden glass rounded-xl p-4 ring-1 ring-emerald-100">
+        <div className="relative overflow-hidden glass rounded-xl p-4 ring-1 ring-emerald-100 col-span-2 sm:col-span-1">
           <div className="glow -left-12 -top-12" aria-hidden="true" />
           <div className="relative">
             <div className="text-xs text-gray-400 mb-1">Total value</div>

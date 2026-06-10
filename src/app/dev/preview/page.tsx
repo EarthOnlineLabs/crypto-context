@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PreviewClient } from "./PreviewClient";
+import { DemoShell } from "@/components/demo/DemoShell";
 
 export const metadata: Metadata = {
   title: "Dashboard preview (dev)",
@@ -8,11 +8,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * Dev-only visual harness for the redesigned dashboard. Renders the real shell
- * and pages against fabricated fixtures so the UI can be iterated locally with
- * zero auth and zero real data. Returns 404 in production.
+ * Dev-only visual harness for the dashboard: the shared demo shell plus a
+ * scenario switcher (populated / first-run). Returns 404 in production —
+ * the public equivalent is /demo.
  */
 export default function DevPreviewPage() {
   if (process.env.NODE_ENV === "production") notFound();
-  return <PreviewClient />;
+  return <DemoShell mode="dev" />;
 }

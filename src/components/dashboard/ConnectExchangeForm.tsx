@@ -104,7 +104,10 @@ export function ConnectExchangeForm({ onConnect, onCancel }: Props) {
       </Field>
 
       {needsPassphrase && (
-        <Field label="Passphrase">
+        <Field
+          label="Passphrase"
+          hint="— the API passphrase you set when creating the key, not your login password"
+        >
           <Input
             type="password"
             value={passphrase}

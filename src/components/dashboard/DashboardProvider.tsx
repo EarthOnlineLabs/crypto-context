@@ -56,6 +56,8 @@ interface DashboardContextValue {
   investorProfile: InvestorProfile | null;
   notes: string;
   notesSaving: boolean;
+  /** False until the user's saved notes have been fetched (prevents editor flash). */
+  notesLoaded: boolean;
   syncing: boolean;
   contextSyncing: boolean;
   profileGenerating: boolean;
@@ -167,6 +169,7 @@ export function DashboardProvider({
   );
   const [notes, setNotes] = useState(mock?.notes ?? "");
   const [notesSaving, setNotesSaving] = useState(false);
+  const [notesLoaded, setNotesLoaded] = useState(isMock);
   const [loading, setLoading] = useState(!isMock);
   const [syncing, setSyncing] = useState(false);
   const [contextSyncing, setContextSyncing] = useState(false);
@@ -340,7 +343,8 @@ export function DashboardProvider({
       fetch("/api/notes")
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => d && active && typeof d.notes === "string" && setNotes(d.notes))
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => active && setNotesLoaded(true));
 
       setLoading(false);
 
@@ -669,6 +673,7 @@ export function DashboardProvider({
     investorProfile,
     notes,
     notesSaving,
+    notesLoaded,
     syncing,
     contextSyncing,
     profileGenerating,

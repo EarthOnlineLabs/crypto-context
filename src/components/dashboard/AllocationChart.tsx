@@ -63,7 +63,7 @@ export function AllocationChart({ holdings, totalValue }: Props) {
   return (
     <div className="glass rounded-xl p-6">
       <h3 className="text-sm font-medium text-gray-500 mb-4">Allocation</h3>
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col sm:flex-row items-center gap-6">
         {/* Donut */}
         <div className="relative flex-shrink-0">
           <div
@@ -85,7 +85,7 @@ export function AllocationChart({ holdings, totalValue }: Props) {
         </div>
 
         {/* Legend */}
-        <div className="flex-1 space-y-2 min-w-0">
+        <div className="flex-1 space-y-2 min-w-0 w-full">
           {slices.map((s) => (
             <div key={s.label} className="flex items-center gap-2 text-sm">
               <span

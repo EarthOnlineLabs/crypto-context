@@ -1,9 +1,9 @@
 /**
- * Fabricated dashboard fixtures for the dev-only preview harness.
+ * Fabricated dashboard fixtures — power the public /demo and the dev-only
+ * /dev/preview harness.
  *
- * IMPORTANT: every value here is INVENTED for visual QA. It must never contain
- * a real user's holdings, addresses, or API data. The preview route 404s in
- * production; these fixtures exist solely to iterate on UI locally.
+ * IMPORTANT: every value here is INVENTED. It must never contain a real user's
+ * holdings, addresses, or API data.
  */
 import type { DashboardMock } from "@/components/dashboard/DashboardProvider";
 
