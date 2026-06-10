@@ -32,17 +32,10 @@
 - `launch/` —— 发布物料（Show HN / Twitter / Reddit / MCP 目录提交），URL 已全部切到 canonical
 - `migrations/` —— 0001 投资者画像、0002 钱包品牌、0003 策略笔记（均已应用到生产）
 
-## 待办（人工，唯一阻塞项）
+## 待办
 
-1. **GitHub 仓库元数据**：本机 `gh` 登录的是 EarthOnlineDev（无 0xrikt 仓库管理权，HTTP 404）。请以 **0xrikt** 身份运行：
-   ```bash
-   gh repo edit 0xrikt/crypto-context \
-     --description "Give any AI agent your real crypto portfolio via MCP. Unifies every exchange + wallet + your strategy into one context. Open source, read-only, \$0." \
-     --homepage "https://cryptocontext.aiself.site" \
-     --add-topic mcp --add-topic model-context-protocol --add-topic crypto \
-     --add-topic portfolio --add-topic ai-agents --add-topic claude
-   ```
-2. 发布时间窗（HN 周二-周四，US 上午）见 `launch/README.md`。
+1. ~~GitHub 仓库元数据~~ ✅ 已完成（2026-06-10，经 0xrikt 网页会话设置：新 description、homepage=canonical、6 个 topics）。
+2. 发布时间窗（HN 周二-周四，US 上午）见 `launch/README.md`——**没有剩余阻塞项，可以发布**。
 
 ## 已知限制（发布后 backlog）
 
