@@ -270,7 +270,10 @@ export function DashboardProvider({
         return;
       }
       const p = override ?? portfolio;
-      if (!p || p.holdings.length === 0) return;
+      if (!p || (p.holdings?.length ?? 0) === 0) {
+        toast.toast("Sync your portfolio first — the profile is generated from your holdings.");
+        return;
+      }
 
       setProfileGenerating(true);
       try {

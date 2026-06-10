@@ -118,6 +118,23 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const ip = getClientIp(request.headers);
+  const rateLimit = checkRateLimit(
+    ip,
+    "tokens/list",
+    RATE_LIMITS.general.maxRequests,
+    RATE_LIMITS.general.windowMs,
+  );
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(Math.ceil((rateLimit.resetAt - Date.now()) / 1000)) },
+      },
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

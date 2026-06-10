@@ -74,6 +74,8 @@ export const RATE_LIMITS = {
   mcp: { maxRequests: 30, windowMs: 60_000 },
   /** Token generation: 5 per minute */
   tokenGenerate: { maxRequests: 5, windowMs: 60_000 },
+  /** Investor-profile generation: 3 per minute (slow + LLM spend) */
+  profileGenerate: { maxRequests: 3, windowMs: 60_000 },
   /** General API: 20 per minute */
   general: { maxRequests: 20, windowMs: 60_000 },
 } as const;
@@ -97,8 +99,9 @@ export function validateApiKey(value: string): string | null {
   const trimmed = value.trim();
   if (trimmed.length === 0) return "API key is required";
   if (trimmed.length > MAX_LENGTHS.apiKey) return "API key is too long";
-  // Basic format: alphanumeric + common separators
-  if (!/^[a-zA-Z0-9_\-]+$/.test(trimmed)) return "API key contains invalid characters";
+  // Basic format: alphanumeric + separators + base64 charset. Kraken and several
+  // other venues issue base64-style keys containing + / = . — must not reject them.
+  if (!/^[A-Za-z0-9+/=_.\-]+$/.test(trimmed)) return "API key contains invalid characters";
   return null;
 }
 

@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/security";
 import { getContextDocuments, upsertInvestorProfile, getInvestorProfile, getStrategyNotes } from "@/lib/store";
 import {
   generateInvestorProfile,
@@ -62,6 +63,23 @@ function parseVenues(value: unknown): ProfileVenue[] {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request.headers);
+  const rateLimit = checkRateLimit(
+    ip,
+    "profile/generate",
+    RATE_LIMITS.profileGenerate.maxRequests,
+    RATE_LIMITS.profileGenerate.windowMs,
+  );
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many profile generations. Please wait a moment." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(Math.ceil((rateLimit.resetAt - Date.now()) / 1000)) },
+      },
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

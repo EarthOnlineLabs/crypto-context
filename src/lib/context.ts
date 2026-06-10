@@ -1,11 +1,6 @@
 import type { PortfolioSnapshot, PortfolioHolding } from "./exchange";
 import type { WalletSnapshot } from "./wallet";
 
-export interface UserContext {
-  portfolio: string;
-  updatedAt: string;
-}
-
 function formatUsd(value: number): string {
   return `$${value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
@@ -168,16 +163,6 @@ export function generatePortfolioContext(
   }
 
   return lines.join("\n");
-}
-
-export function buildUserContext(
-  snapshots: PortfolioSnapshot[],
-  walletSnapshots: WalletSnapshot[] = []
-): UserContext {
-  return {
-    portfolio: generatePortfolioContext(snapshots, walletSnapshots),
-    updatedAt: new Date().toISOString(),
-  };
 }
 
 export interface ContextDocument {

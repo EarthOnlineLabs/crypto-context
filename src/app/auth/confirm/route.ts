@@ -13,7 +13,9 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/dashboard";
+  // Only same-origin relative paths ("/x", not "//host" or absolute URLs) — open-redirect guard.
+  const rawNext = searchParams.get("next") ?? "/dashboard";
+  const next = /^\/(?!\/)/.test(rawNext) ? rawNext : "/dashboard";
 
   if (!token_hash || !type) {
     return NextResponse.redirect(

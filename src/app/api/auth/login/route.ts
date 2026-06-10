@@ -18,7 +18,13 @@ export async function POST(request: NextRequest) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    // Keep the two states the user can act on; genericize everything else.
+    const msg = /not confirmed/i.test(error.message)
+      ? "Email not confirmed yet — check your inbox for the confirmation link."
+      : /rate|too many/i.test(error.message)
+        ? "Too many attempts. Please wait a moment and try again."
+        : "Invalid email or password.";
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 
   return NextResponse.json({
