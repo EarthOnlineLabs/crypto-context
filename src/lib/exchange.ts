@@ -153,6 +153,22 @@ export async function fetchPortfolio(
 
   const balances: Balances = await exchange.fetchBalance();
 
+  // Price everything with ONE bulk tickers call where supported. The old per-asset
+  // fetchTicker path made up to 2 sequential round-trips per asset (and ccxt's
+  // rate limiter serializes them) — the dominant latency of the whole context path.
+  let bulkTickers: Record<string, { last?: number | null }> = {};
+  if (exchange.has["fetchTickers"]) {
+    try {
+      bulkTickers = (await exchange.fetchTickers()) as typeof bulkTickers;
+    } catch {
+      // Fall back to per-asset pricing below.
+    }
+  }
+  const bulkPrice = (asset: string): number | null => {
+    const t = bulkTickers[`${asset}/USDT`] ?? bulkTickers[`${asset}/USD`] ?? bulkTickers[`${asset}/USDC`];
+    return t?.last ?? null;
+  };
+
   // Filter out zero balances and build holdings list
   const holdings: PortfolioHolding[] = [];
   let totalUsdValue = 0;
@@ -166,25 +182,25 @@ export async function fetchPortfolio(
     const free = freeMap[asset] || 0;
     const locked = usedMap[asset] || 0;
 
-    // Try to get USD value via ticker
     let usdValue: number | null = null;
     if (asset === "USDT" || asset === "USDC" || asset === "USD" || asset === "BUSD") {
       usdValue = total;
     } else {
-      try {
-        const ticker = await exchange.fetchTicker(`${asset}/USDT`);
-        if (ticker.last) {
-          usdValue = total * ticker.last;
-        }
-      } catch {
-        // No USDT pair available, try USD
+      const last = bulkPrice(asset);
+      if (last) {
+        usdValue = total * last;
+      } else if (Object.keys(bulkTickers).length === 0) {
+        // Bulk tickers unavailable on this venue — per-asset fallback (slow path).
         try {
-          const ticker = await exchange.fetchTicker(`${asset}/USD`);
-          if (ticker.last) {
-            usdValue = total * ticker.last;
-          }
+          const ticker = await exchange.fetchTicker(`${asset}/USDT`);
+          if (ticker.last) usdValue = total * ticker.last;
         } catch {
-          // Can't price this asset
+          try {
+            const ticker = await exchange.fetchTicker(`${asset}/USD`);
+            if (ticker.last) usdValue = total * ticker.last;
+          } catch {
+            // Can't price this asset
+          }
         }
       }
     }
