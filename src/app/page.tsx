@@ -256,7 +256,7 @@ export default function Home() {
                 <span className="text-gray-700">crypto-ctx \</span>
                 <br />
                 {"  "}
-                <span className="text-amber-600">https://&lt;your-endpoint&gt;/api/mcp</span>{" "}
+                <span className="text-teal-700">https://cryptocontext.aiself.site/api/mcp</span>{" "}
                 <span className="text-gray-400">--header</span>{" "}
                 <span className="text-gray-700">&quot;Authorization: Bearer</span>{" "}
                 <span className="text-emerald-600">YOUR_TOKEN</span>

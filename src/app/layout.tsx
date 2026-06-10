@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/ui";
@@ -13,10 +13,47 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://cryptocontext.aiself.site";
+const TITLE = "CryptoContext — Not your context, not your AI.";
+const DESCRIPTION =
+  "Your personal crypto context layer. Connect exchanges and wallets once — every AI agent instantly knows what you hold, how you trade, and what your strategy is. MCP-native, open source, free.";
+
 export const metadata: Metadata = {
-  title: "CryptoContext — Your portfolio context, everywhere",
-  description:
-    "Personal crypto context layer. Connect your exchanges once, and every AI agent knows what you hold.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s · CryptoContext",
+  },
+  description: DESCRIPTION,
+  keywords: [
+    "crypto",
+    "portfolio",
+    "MCP",
+    "Model Context Protocol",
+    "AI agent",
+    "Claude",
+    "ChatGPT",
+    "context layer",
+    "investor profile",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "CryptoContext",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#059669",
 };
 
 export default function RootLayout({

@@ -9,7 +9,21 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SECURITY_HEADERS } from "@/lib/security";
 
+const CANONICAL_HOST = "cryptocontext.aiself.site";
+const LEGACY_HOSTS = new Set(["app-rho-jet-70.vercel.app"]);
+
 export async function middleware(request: NextRequest) {
+  // Consolidate human traffic on the canonical domain. /api/* keeps serving on
+  // legacy hosts so existing MCP/skill configs pointing there never break.
+  const host = request.headers.get("host") ?? "";
+  if (LEGACY_HOSTS.has(host) && !request.nextUrl.pathname.startsWith("/api")) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https:";
+    url.host = CANONICAL_HOST;
+    url.port = "";
+    return NextResponse.redirect(url, 308);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
