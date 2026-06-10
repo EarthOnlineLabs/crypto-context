@@ -93,9 +93,11 @@ A few things I expect pushback on, so let me front-run them:
   dimension rather than retrieved semantically. Less to go wrong, nothing
   to hallucinate.
 
-Known limitations right now: EVM wallets only (no Solana yet), spot
-balances (no perps/positions), and pricing leans on exchange tickers.
-Roadmap and warts in the repo. Happy to go deep on any of it.
+Known limitations right now: spot balances only (no perps/positions),
+pricing leans on exchange tickers, and the rate limiter is per-instance
+(fine at this scale, Redis later). Wallets cover 7 EVM chains + Solana
+(native SOL + all SPL tokens). Roadmap and warts in the repo. Happy to
+go deep on any of it.
 ```
 
 ---

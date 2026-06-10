@@ -58,6 +58,21 @@ API keys, secrets, and passphrases are encrypted with **AES-256-GCM** before the
 - Error sanitization: raw exchange/CCXT errors are logged server-side but never returned to the client (they can leak account hints). See [`src/lib/security.ts`](src/lib/security.ts).
 - Dollar amounts are redacted from the generated context's permission-sensitive fields before they leave the server.
 
+## What the LLM sees (investor profile)
+
+The investor profile is written by a free LLM (GLM-4.7-Flash). Being precise about that data flow:
+
+- **Sent to the LLM:** aggregated, derived facts only — asset symbols with allocation
+  percentages, concentration/stablecoin ratios, venue *names* with percentage splits,
+  trade-pattern statistics, fund-flow summaries, and your own strategy notes (text you
+  chose to write).
+- **Never sent:** API keys or secrets, wallet addresses, account identifiers, email,
+  raw transaction records.
+- All portfolio *numbers* in the served context are computed deterministically on the
+  server; the LLM interprets the shape, it does not produce the figures.
+- Skip it entirely: omit `GLM_API_KEY` (especially when self-hosting) and the profile
+  falls back to a fully deterministic version — no data leaves your infrastructure.
+
 ## Self-hosting: trust no one, including us
 
 The strongest version of "is this safe?" is "I ran it myself." Clone the repo, supply your own Supabase project and your own `ENCRYPTION_KEY`, and deploy. Then:

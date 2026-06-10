@@ -115,7 +115,7 @@ So it's yours. MCP-native, point it at any agent. Not your context, not your AI.
 ```
 Open source, runs for $0, one line to connect Claude / Cursor / any MCP agent:
 
-claude mcp add --transport http crypto-ctx <your-endpoint>/api/mcp \
+claude mcp add --transport http crypto-ctx https://cryptocontext.aiself.site/api/mcp \
   --header "Authorization: Bearer YOUR_TOKEN"
 
 Repo + live demo: [link]

@@ -45,36 +45,18 @@ Everything needed to take CryptoContext public, organized so the **message** dri
   ```bash
   gh repo edit 0xrikt/crypto-context \
     --description "Give any AI agent your real crypto portfolio via MCP. Unifies every exchange + wallet into structured context. Open source, read-only, \$0." \
-    --homepage "https://app-rho-jet-70.vercel.app" \
+    --homepage "https://cryptocontext.aiself.site" \
     --add-topic mcp --add-topic model-context-protocol --add-topic crypto \
     --add-topic portfolio --add-topic ai-agents --add-topic claude \
     --add-topic cursor --add-topic ccxt --add-topic defi --add-topic open-source
   ```
   ⚠️ Run this while `gh` is authenticated as the repo owner **0xrikt**. The local `gh` is currently logged in as `EarthOnlineDev`, which can push over SSH but lacks admin rights to edit `0xrikt/crypto-context` (you'll get an HTTP 404). Switch with `gh auth switch` / `gh auth login`, or just set the description/topics/website in the GitHub web UI.
-- [ ] **(Decision) Custom domain** — see below. Either swap now, or consciously launch on the Vercel URL.
-- [ ] **A clean transcript screenshot exists** for the thread / HN / Farcaster (real session preferred; else the landing-page transcript card).
-
----
-
-## Domain swap (your call — 2 minutes)
-
-The kit currently uses the live Vercel URL `app-rho-jet-70.vercel.app`, which **works today**. You mentioned a custom domain is ready. If you want to launch on it (recommended — it's more brandable and you only get one first impression), do this *before* posting:
-
-1. **Point the domain in Vercel** (Project → Settings → Domains → add your domain), or:
-   ```bash
-   vercel domains add <yourdomain> ; vercel alias set <deployment> <yourdomain>
-   ```
-2. **Find-replace the URL across the kit + README** (the landing page itself is already domain-neutral, so it needs no change):
-   ```bash
-   cd /Users/rik/projects/crypto-context-layer/app
-   grep -rl "app-rho-jet-70.vercel.app" README.md launch/ HANDOVER.md \
-     | xargs sed -i '' 's/app-rho-jet-70\.vercel\.app/YOURDOMAIN/g'
-   ```
-   (Replace `YOURDOMAIN` with the real host, no scheme.)
-3. **Update repo metadata homepage** to the new domain (re-run the `gh repo edit --homepage` line above).
-4. Re-verify the live demo + MCP endpoint resolve on the new domain, then commit the URL changes.
-
-If you'd rather not decide now, launching on the Vercel URL is completely fine — nothing breaks. Just don't swap mid-launch (links in posts go stale).
+- [x] **Custom domain** — DONE. Canonical is `https://cryptocontext.aiself.site`; the old
+  Vercel host 308-redirects human pages there (its `/api/*` still serves, so nothing breaks).
+  The whole kit + README already use the canonical URL.
+- [ ] **A clean transcript screenshot exists** for the thread / HN / Farcaster (real session preferred; else the landing-page transcript card or `/demo`).
+- [x] **Public no-signup demo** — `https://cryptocontext.aiself.site/demo` (fabricated data).
+  Lead with it in posts: people can click around before signing up.
 
 ---
 

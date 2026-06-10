@@ -7,7 +7,7 @@ CryptoContext is a **remote (HTTP) MCP server** with Bearer-token auth, and it's
 **Canonical facts to reuse:**
 
 - **Name:** CryptoContext
-- **Endpoint:** `https://app-rho-jet-70.vercel.app/api/mcp` (HTTP transport, JSON-RPC 2.0)
+- **Endpoint:** `https://cryptocontext.aiself.site/api/mcp` (HTTP transport, JSON-RPC 2.0)
 - **Auth:** `Authorization: Bearer <token>` (created in the dashboard)
 - **Repo:** https://github.com/0xrikt/crypto-context
 - **Tools:** `get_portfolio`, `get_context`
@@ -73,7 +73,7 @@ fund-flow patterns. The one call that makes an agent understand your book.
 {
   "mcpServers": {
     "crypto-context": {
-      "url": "https://app-rho-jet-70.vercel.app/api/mcp",
+      "url": "https://cryptocontext.aiself.site/api/mcp",
       "headers": { "Authorization": "Bearer YOUR_TOKEN" }
     }
   }
@@ -84,7 +84,7 @@ CLI form:
 
 ```bash
 claude mcp add --transport http crypto-ctx \
-  https://app-rho-jet-70.vercel.app/api/mcp \
+  https://cryptocontext.aiself.site/api/mcp \
   --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
