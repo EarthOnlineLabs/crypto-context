@@ -10,12 +10,12 @@ These are **adaptations**, not new messages — same thesis as [thesis.md](thesi
 
 ### Best-fit subs (in priority order)
 
-**r/LocalLLaMA** — strongest fit. They love open-source, self-hostable, privacy-respecting, and "no LLM needed for this part." Lead with those, not crypto.
+**r/LocalLLaMA** — strongest fit. They love open-source, self-hostable, privacy-respecting, and "deterministic where it counts." Lead with those, not crypto. (Don't claim "no LLM anywhere" — the optional investor-profile narrative is LLM-written; this sub WILL read the code.)
 
 Title:
 ```
 I built an open-source MCP server that gives your local agent your real
-crypto portfolio — context generated deterministically, no LLM, self-hostable
+crypto portfolio — deterministic numbers, self-hostable, read-only keys
 ```
 Body:
 ```
@@ -27,9 +27,12 @@ So I built a context layer: connect venues (read-only keys) and it unifies
 everything into structured context any MCP agent can query. Two things this
 crowd might care about:
 
-- The context is computed with plain deterministic rules — no LLM in the
-  loop to build it. Reproducible, nothing leaves to a model, $0 to generate.
-  The reasoning happens in whatever agent you point at it.
+- Every number is computed with plain deterministic rules — holdings,
+  concentration, trade stats. Reproducible, $0 to generate. There's one
+  optional LLM step (a narrative investor profile) and it only sees those
+  aggregated facts — never keys/addresses; skip the API key and it falls
+  back to a rule-based profile. The actual reasoning happens in whatever
+  agent you point at it — including your local one.
 - Fully self-hostable. You run it, you hold the AES-256-GCM key, nobody
   (including me) can see your data. Open source so you can read what touches
   your keys.

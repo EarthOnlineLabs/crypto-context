@@ -1,6 +1,6 @@
 # Show HN
 
-Hacker News is the credibility moment, and it's crypto-skeptical. So: lead with the **technical** idea (an MCP context layer, deterministic generation, open source, self-hostable, $0), treat crypto as the *domain* not the pitch, and be honest about limitations. The security/open-source story is what plays here — HN will read the code.
+Hacker News is the credibility moment, and it's crypto-skeptical. So: lead with the **technical** idea (an MCP context layer, deterministic numbers, open source, self-hostable, $0), treat crypto as the *domain* not the pitch, and be honest about limitations. The security/open-source story is what plays here — HN will read the code. **Precision matters: the numbers are rule-computed; the optional investor-profile narrative is LLM-written from aggregated facts only. Never claim "no LLM anywhere" — someone will read `generators/investor-profile.ts` and call it out.**
 
 **Submit the GitHub repo as the URL** (open source is the trust signal), not the marketing site. Post around 8–10am ET on a weekday. Then immediately post the prepared first comment.
 
@@ -33,18 +33,22 @@ actually hold — your money is split across exchanges and wallets and no
 model has the full picture. Pasting positions into a chat by hand is
 stale the moment you send it.
 
-CryptoContext is an MCP server that unifies your holdings across 10
-exchanges (read-only API keys) and EVM wallets, plus your trading
-behavior (DCA cadence, buy/sell ratio, fund flows), into one structured
-context any MCP agent can query. Connect once and Claude/Cursor/etc. can
-answer "what's wrong with my portfolio?" about YOUR portfolio.
+CryptoContext is an MCP server that unifies your holdings across 16
+exchanges (read-only API keys) and wallets on 8 chains (EVM + Solana),
+plus your trading behavior (DCA cadence, buy/sell ratio, fund flows),
+into one structured context any MCP agent can query. Connect once and
+Claude/Cursor/etc. can answer "what's wrong with my portfolio?" about
+YOUR portfolio.
 
 Two design choices I care about:
 
-1. The context is generated deterministically — plain rules over your
-   data, no LLM in the loop. It's reproducible, nothing gets sent to a
-   model to BUILD the context, and it costs $0 to generate. The agent you
-   point at it does the reasoning; the layer's job is just to be correct.
+1. Every number is computed deterministically — plain rules over your
+   data. Holdings, concentration, trade stats: reproducible, nothing
+   hallucinated, $0 to generate. On top of that sits one optional LLM
+   step: a free model writes the investor-profile narrative, and it only
+   ever sees those aggregated facts — never keys, never addresses. Skip
+   the LLM key and you get a rule-based profile instead; the layer that
+   touches your accounts has no model in it either way.
 
 2. It's open source and read-only on purpose. The #1 objection to anything
    touching exchange keys is "why would I trust you." The answer is: don't

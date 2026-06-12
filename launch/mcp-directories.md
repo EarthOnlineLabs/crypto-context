@@ -35,25 +35,32 @@ Your crypto portfolio as context for any AI agent
 
 ```
 CryptoContext is an MCP server that gives any AI agent your real crypto
-portfolio. It connects to 10 exchanges (Binance, OKX, Bybit, Coinbase,
-Kraken, Bitget, KuCoin, Gate.io, HTX, MEXC) via read-only API keys and to
-EVM wallets, then unifies everything — holdings, allocation, concentration,
-trading patterns, and fund flows — into clean, structured context.
+portfolio. It connects to 16 exchanges (Binance, OKX, Bybit, Coinbase,
+Kraken, Bitget, KuCoin, Gate.io, HTX, MEXC, Crypto.com, BingX, Bitfinex,
+Gemini, Bitstamp, Upbit) via read-only API keys and to wallets on 8 chains
+(Ethereum, BNB Chain, Polygon, Arbitrum, Base, Optimism, Avalanche, and
+Solana incl. SPL tokens), then unifies everything — holdings, allocation,
+concentration, trading patterns, fund flows, and the user's own strategy
+notes — into clean, structured context.
 
 Instead of pasting positions into a chat by hand, connect once and ask your
 agent "what's wrong with my portfolio?" — it answers about YOUR holdings,
 across every venue at once.
 
 Design choices:
-• Deterministic context generation (no LLM) — reproducible, private, free.
+• Deterministic numbers — holdings/concentration/trade stats computed by
+  rules, reproducible, free. An optional free LLM writes the investor-profile
+  narrative from aggregated facts only (never keys or addresses).
 • Read-only by design — no order/withdraw code paths; exchange-side keys
   enforce it.
 • Open source and self-hostable — hold your own encryption key.
 • AES-256-GCM at rest; MCP tokens stored as SHA-256 hashes.
+• Per-source freshness in the context (live / cached / unreachable), so the
+  agent knows when the picture is degraded.
 
 Tools: get_portfolio (holdings + USD value + allocation %), get_context
-(full investment context: portfolio + concentration + trading profile +
-fund flows).
+(full investor context: profile + strategy notes + portfolio + trading
+patterns + fund flows).
 ```
 
 ## Tools description (for directories that list tools)

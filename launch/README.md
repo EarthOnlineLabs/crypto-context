@@ -17,8 +17,8 @@ Everything needed to take CryptoContext public, organized so the **message** dri
 3. **Thesis (the why-it-matters):** In an agent world, whoever owns your context owns the relationship. It should be you — open source, MCP-native, portable. *Not your context, not your AI.* The [thesis post](thesis.md) is this layer.
 
 **Three differentiators that must always survive editing:**
-- **Comprehensive** — every venue + how you trade, one picture. A partial view is worse than none.
-- **Deterministic** — context computed by rules, no LLM. Reproducible, private, $0.
+- **Comprehensive** — every venue (16 exchanges + 8 chains) + how you trade, one picture. A partial view is worse than none.
+- **Grounded** — every number computed by rules: reproducible, private, $0. The one LLM step (the optional investor-profile narrative) reads only aggregated facts — never keys or addresses — and degrades to a rule-based profile without it. ⚠ Never compress this to "no LLM": readers of the code will find `generators/investor-profile.ts`.
 - **Yours** — open source, read-only, self-hostable, no lock-in.
 
 ---
@@ -35,6 +35,14 @@ Everything needed to take CryptoContext public, organized so the **message** dri
 | [reddit-and-farcaster.md](reddit-and-farcaster.md) | Tailored posts per community. | Reddit / Farcaster |
 
 ---
+
+> **Revision 2026-06-12** — pre-launch hardening pass shipped: per-venue Data Sources
+> freshness in the context (live/cached/unreachable), wallet snapshot fallback,
+> honest per-currency fund-flow math, venue-labeled dashboard insights, new logo +
+> landing visual upgrade, and all materials in this kit re-synced to product truth
+> (16 exchanges / 8 chains / "grounded numbers + optional LLM narrative" — the old
+> "10 exchanges, no LLM" claims are gone). Next HN window: **Tue–Thu, so Jun 16–18**,
+> 8–10am ET. Day-0 directory seeding can start any day before that.
 
 ## Go-live checklist (do before any posting)
 
@@ -54,7 +62,8 @@ Everything needed to take CryptoContext public, organized so the **message** dri
 - [x] **Custom domain** — DONE. Canonical is `https://cryptocontext.aiself.site`; the old
   Vercel host 308-redirects human pages there (its `/api/*` still serves, so nothing breaks).
   The whole kit + README already use the canonical URL.
-- [ ] **A clean transcript screenshot exists** for the thread / HN / Farcaster (real session preferred; else the landing-page transcript card or `/demo`).
+- [ ] **A clean transcript screenshot exists** for the thread / HN / Farcaster (real session preferred; else the landing-page transcript card or `/demo`). The landing's dark proof-terminal section now screenshots well for this.
+- [ ] **README screenshot is current** — `docs/demo-dashboard.png` must show the new venue-grouped Context Insights + new logo (retake from `/demo` after deploy).
 - [x] **Public no-signup demo** — `https://cryptocontext.aiself.site/demo` (fabricated data).
   Lead with it in posts: people can click around before signing up.
 

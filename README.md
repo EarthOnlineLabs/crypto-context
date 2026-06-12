@@ -39,6 +39,7 @@ Three integration forms, pick whichever fits the AI you live in:
 - **Your strategy, in your own words.** A built-in strategy notebook rides along with every context, so you never re-explain your thesis to a new model. Write it in English or 中文 — the AI investor profile follows your language.
 - **Every venue, one picture.** 16 exchanges + 8 chains (EVM + Solana) unified into a single complete view. Comprehensiveness is the whole point.
 - **Grounded numbers, AI-written profile.** Holdings, concentration and trading stats are computed locally into hard facts. A free LLM then reads only that aggregated shape — never your keys or addresses — to write a rich investor profile. The numbers stay deterministic; the interpretation is smart.
+- **Honest about freshness.** Every venue in the context carries its status — live, cached snapshot, or unreachable — and per-source sync times, so your AI knows when the picture is complete and never mistakes "couldn't fetch" for "holds nothing".
 - **Open source and read-only.** Read-only API keys, encrypted at rest. Don't trust us — [read the code](SECURITY.md) or self-host.
 - **No lock-in, by design.** You own the context layer and point it at any agent. Switch models freely; your context follows you.
 

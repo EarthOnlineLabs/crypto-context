@@ -78,15 +78,18 @@ one complete view. Your AI finally sees all of it at once.
 
 **5/**
 ```
-The part I'm most opinionated about: the context is computed, not inferred.
+The part I'm most opinionated about: every number is computed, not inferred.
 
-Plain deterministic rules over your data. No LLM in the loop to build it.
+Holdings, concentration, trade stats — plain deterministic rules over
+your data.
 
 → reproducible
-→ private (no model ingests your positions to make the context)
+→ nothing hallucinated
 → $0 to generate
 
-The agent you point at it does the thinking.
+One optional LLM step writes the investor-profile narrative on top — and
+it only ever sees those aggregated facts. Never your keys, never your
+addresses. The agent you point at it does the thinking.
 ```
 
 **6/**

@@ -34,7 +34,7 @@ Three things make this layer worth building rather than bolting onto yet another
 
 **It has to be structured for machines, not humans.** A portfolio tracker is a dashboard you stare at and interpret yourself. That's the opposite of what an agent needs. An agent needs clean, queryable facts — concentration, allocation, risk flags, patterns — computed and handed over, not rendered as a chart for your eyeballs. Different artifact entirely.
 
-**It should be computed, not hallucinated.** The context itself is generated deterministically — plain rules over your data, no LLM in the loop. That means it's reproducible, it's private (no model ingests your positions to *build* the context), and it costs nothing to generate. The intelligence happens in whatever agent you point at it. The context layer's job is to be correct, not clever.
+**It should be computed, not hallucinated.** Every number in the context is generated deterministically — plain rules over your data. Holdings, concentration, trade stats: reproducible, nothing invented, free to generate. The one narrative piece — the investor profile — is written by an optional LLM that only ever reads those aggregated facts, never your keys or addresses, and the layer falls back to a rule-based profile without it. The intelligence happens in whatever agent you point at it. The context layer's job is to be correct, not clever.
 
 ## Why it has to be yours
 
