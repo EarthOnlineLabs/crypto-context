@@ -44,6 +44,51 @@ Works in Claude Code, Claude.ai, and OpenClaw (all read \`SKILL.md\` directories
 `;
 }
 
+/**
+ * What the assembled context contains, derived from its section headers — shown
+ * as a checklist so users can verify nothing is missing before they copy.
+ */
+interface SectionInventory {
+  notes: boolean;
+  profile: boolean;
+  portfolio: boolean;
+  tradingVenues: number;
+  fundFlowVenues: number;
+}
+
+function inventory(md: string): SectionInventory {
+  return {
+    notes: md.includes("# Investor Notes"),
+    profile: md.includes("# Investor Profile"),
+    portfolio: md.includes("# Portfolio"),
+    tradingVenues: (md.match(/^# Trading Profile — /gm) ?? []).length,
+    fundFlowVenues: (md.match(/^# Fund Flow — /gm) ?? []).length,
+  };
+}
+
+function SectionChip({ label, present }: { label: string; present: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${
+        present
+          ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
+          : "bg-gray-50 text-gray-400 ring-gray-300/40"
+      }`}
+    >
+      {present ? (
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      ) : (
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+        </svg>
+      )}
+      {label}
+    </span>
+  );
+}
+
 export function ContextExport() {
   const { getFullContext, hasActiveToken } = useDashboard();
   const [context, setContext] = useState("");
@@ -98,15 +143,41 @@ export function ContextExport() {
 
           {context ? (
             <>
-              <pre className="mt-3 flex-1 max-h-48 overflow-auto rounded-lg bg-gray-50 border border-gray-200 p-3 text-[11px] leading-relaxed text-gray-600 whitespace-pre-wrap font-mono">
-                {context.slice(0, 1200)}
-                {context.length > 1200 ? "\n…" : ""}
+              {(() => {
+                const inv = inventory(context);
+                return (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    <SectionChip label="Your notes" present={inv.notes} />
+                    <SectionChip label="Investor profile" present={inv.profile} />
+                    <SectionChip label="Portfolio" present={inv.portfolio} />
+                    <SectionChip
+                      label={`Trading (${inv.tradingVenues} venue${inv.tradingVenues === 1 ? "" : "s"})`}
+                      present={inv.tradingVenues > 0}
+                    />
+                    <SectionChip
+                      label={`Fund flow (${inv.fundFlowVenues} venue${inv.fundFlowVenues === 1 ? "" : "s"})`}
+                      present={inv.fundFlowVenues > 0}
+                    />
+                  </div>
+                );
+              })()}
+              <pre className="mt-3 flex-1 max-h-64 overflow-auto rounded-lg bg-gray-50 border border-gray-200 p-3 text-[11px] leading-relaxed text-gray-600 whitespace-pre-wrap font-mono">
+                {context}
               </pre>
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-xs text-gray-400">
-                  ~{tokenEst.toLocaleString()} tokens · {context.length.toLocaleString()} chars
+                  ~{tokenEst.toLocaleString()} tokens · everything above is copied
                 </span>
-                <CopyButton value={context} label="Copy context" />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={loadContext}
+                    disabled={loading}
+                    className="text-xs text-gray-400 hover:text-gray-600 transition disabled:opacity-50"
+                  >
+                    {loading ? "Refreshing…" : "Refresh"}
+                  </button>
+                  <CopyButton value={context} label="Copy context" />
+                </div>
               </div>
             </>
           ) : (

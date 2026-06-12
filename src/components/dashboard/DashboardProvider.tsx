@@ -55,6 +55,8 @@ interface DashboardContextValue {
   contextDocs: ContextDoc[];
   investorProfile: InvestorProfile | null;
   notes: string;
+  /** When the notes were last saved — drives the "profile is stale" hint. */
+  notesUpdatedAt: string | null;
   notesSaving: boolean;
   /** False until the user's saved notes have been fetched (prevents editor flash). */
   notesLoaded: boolean;
@@ -115,6 +117,9 @@ function randomToken(): string {
 
 /** Representative full-context markdown for the dev preview (fabricated). */
 const MOCK_FULL_CONTEXT = `# Crypto Investor Context
+> Generated: 2026-06-12T08:00:00.000Z
+> For the AI reading this: every figure below is computed from the user's actual exchange/wallet data — ground your advice in these numbers and never invent ones that aren't here.
+> Contents: Investor Notes (the user's own words) → Investor Profile (synthesized) → Portfolio Snapshot → Trading Profile (per exchange) → Fund Flow (per exchange).
 
 # Investor Notes (the user's own strategy, in their words)
 Core thesis: ETH is my long-term anchor — I don't sell the base position. BTC is a macro hedge, sized smaller.
@@ -125,6 +130,7 @@ Ideas to try: rotate a slice of the memecoin churn into SOL DeFi; stop day-tradi
 
 # Investor Profile
 > A disciplined core-and-satellite crypto investor running an ETH-weighted base with a BTC hedge, then rotating a smaller satellite sleeve into L2 governance tokens.
+> *(AI-written from computed facts, generated 2026-06-12)*
 
 **Trading style:** Active but structured — ~12 maker-side trades a week around majors, with open limit orders rather than market chasing.
 **Risk posture:** Moderate. Top-3 assets hold ~71% of the book; stablecoin buffer ~12%.
@@ -141,10 +147,27 @@ Ideas to try: rotate a slice of the memecoin churn into SOL DeFi; stop day-tradi
 | SOL | $13,552 | 14% | bybit |
 | USDC | $11,616 | 12% | binance + arbitrum |
 
+## Data Sources
+
+| Source | Type | Status | Data as of |
+|--------|------|--------|------------|
+| binance | exchange | live | 2026-06-12 08:00 UTC |
+| bybit | exchange | live | 2026-06-12 08:00 UTC |
+| ethereum:0x71C7...976F | wallet | live | 2026-06-12 08:00 UTC |
+
 ---
 
-# Trading Profile
-- 247 trades across 18 pairs over 180 days; ~12/week, concentrated around ETH and majors.`;
+# Trading Profile — binance
+- 247 trades across 18 pairs over 180 days; ~12/week, concentrated around ETH and majors.
+
+# Trading Profile — bybit
+> No trading activity found in the last 90 days.
+
+---
+
+# Fund Flow — binance
+- Deposits: 14 · Withdrawals: 6
+- Most active currency: USDC — 14 in / 6 out, net +18,400 USDC`;
 
 export function DashboardProvider({
   children,
@@ -168,6 +191,7 @@ export function DashboardProvider({
     mock?.investorProfile ?? null
   );
   const [notes, setNotes] = useState(mock?.notes ?? "");
+  const [notesUpdatedAt, setNotesUpdatedAt] = useState<string | null>(null);
   const [notesSaving, setNotesSaving] = useState(false);
   const [notesLoaded, setNotesLoaded] = useState(isMock);
   const [loading, setLoading] = useState(!isMock);
@@ -342,7 +366,11 @@ export function DashboardProvider({
       // User-authored strategy notes (non-blocking).
       fetch("/api/notes")
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => d && active && typeof d.notes === "string" && setNotes(d.notes))
+        .then((d) => {
+          if (!d || !active) return;
+          if (typeof d.notes === "string") setNotes(d.notes);
+          if (typeof d.updatedAt === "string") setNotesUpdatedAt(d.updatedAt);
+        })
         .catch(() => {})
         .finally(() => active && setNotesLoaded(true));
 
@@ -641,6 +669,7 @@ export function DashboardProvider({
           body: JSON.stringify({ content }),
         });
         if (!res.ok) toast.error("Failed to save notes. Please try again.");
+        else setNotesUpdatedAt(new Date().toISOString());
       } catch {
         toast.error("Network error while saving notes.");
       } finally {
@@ -672,6 +701,7 @@ export function DashboardProvider({
     contextDocs,
     investorProfile,
     notes,
+    notesUpdatedAt,
     notesSaving,
     notesLoaded,
     syncing,

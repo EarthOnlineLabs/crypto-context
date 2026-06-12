@@ -20,6 +20,8 @@ export async function GET() {
       content: d.content,
       metadata: d.metadata,
       updatedAt: d.updated_at,
+      exchange: d.connections?.exchange ?? null,
+      label: d.connections?.label ?? null,
     })),
   });
 }

@@ -60,6 +60,10 @@ export interface ContextDoc {
   content: string;
   metadata: Record<string, unknown>;
   updatedAt: string;
+  /** Exchange id this document was computed from (e.g. "bitget"). */
+  exchange?: string | null;
+  /** The connection's user-facing label (e.g. "API key" or a custom name). */
+  label?: string | null;
 }
 
 export interface InvestorProfile {

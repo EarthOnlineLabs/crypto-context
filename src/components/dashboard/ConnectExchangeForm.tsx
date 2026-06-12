@@ -2,25 +2,9 @@
 
 import { useState } from "react";
 import { Alert, Button, Field, Input, Select } from "@/components/ui";
+import { EXCHANGE_OPTIONS } from "@/lib/exchange-names";
 
-const EXCHANGES = [
-  { id: "binance", name: "Binance" },
-  { id: "okx", name: "OKX" },
-  { id: "bybit", name: "Bybit" },
-  { id: "coinbase", name: "Coinbase" },
-  { id: "kraken", name: "Kraken" },
-  { id: "bitget", name: "Bitget" },
-  { id: "kucoin", name: "KuCoin" },
-  { id: "gateio", name: "Gate.io" },
-  { id: "htx", name: "HTX" },
-  { id: "mexc", name: "MEXC" },
-  { id: "cryptocom", name: "Crypto.com" },
-  { id: "bingx", name: "BingX" },
-  { id: "bitfinex", name: "Bitfinex" },
-  { id: "gemini", name: "Gemini" },
-  { id: "bitstamp", name: "Bitstamp" },
-  { id: "upbit", name: "Upbit" },
-];
+const EXCHANGES = EXCHANGE_OPTIONS;
 
 const PASSPHRASE_EXCHANGES = ["okx", "bitget", "kucoin"];
 

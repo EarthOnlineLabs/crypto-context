@@ -84,29 +84,60 @@ export const populatedMock: DashboardMock = {
   contextDocs: [
     {
       dimension: "trading_profile",
+      exchange: "binance",
+      label: "API key",
       updatedAt: minutesAgo(9),
       metadata: {
         tradeCount: 247,
         tradesPerWeek: 12.3,
         uniquePairs: 18,
         hasOpenOrders: true,
+        dataStatus: "ok",
         dateRange: { from: daysAgo(180).slice(0, 10), to: daysAgo(0).slice(0, 10) },
       },
       content:
-        "Trading Profile\n- 247 trades across 18 pairs over the last 180 days\n- ~12 trades/week, concentrated around ETH and majors\n- Holds open limit orders; comfortable with maker-side execution\n- Behaviour: swing trades layered on a long-term core",
+        "Trading Profile — binance\n- 247 trades across 18 pairs over the last 180 days\n- ~12 trades/week, concentrated around ETH and majors\n- Holds open limit orders; comfortable with maker-side execution\n- Behaviour: swing trades layered on a long-term core",
     },
     {
       dimension: "fund_flow",
+      exchange: "binance",
+      label: "API key",
       updatedAt: minutesAgo(9),
       metadata: {
         totalDeposits: 14,
         totalWithdrawals: 6,
         totalTransfers: 20,
         fundingPattern: "regular",
+        dataStatus: "ok",
         dateRange: { from: daysAgo(180).slice(0, 10), to: daysAgo(0).slice(0, 10) },
       },
       content:
-        "Fund Flow\n- 14 deposits, 6 withdrawals over 180 days\n- Regular cadence consistent with weekly DCA\n- Net inflow; withdrawals align with periodic profit-taking",
+        "Fund Flow — binance\n- 14 deposits, 6 withdrawals over 180 days\n- Regular cadence consistent with weekly DCA\n- Net inflow; withdrawals align with periodic profit-taking",
+    },
+    {
+      dimension: "trading_profile",
+      exchange: "bybit",
+      label: "API key",
+      updatedAt: minutesAgo(7),
+      metadata: { tradeCount: 0, hasOpenOrders: false, dataStatus: "empty" },
+      content:
+        "Trading Profile — bybit\n> No trading activity found in the last 90 days.\n\nThis account appears to be used primarily for holding, not active trading.",
+    },
+    {
+      dimension: "fund_flow",
+      exchange: "bybit",
+      label: "API key",
+      updatedAt: minutesAgo(7),
+      metadata: {
+        totalDeposits: 2,
+        totalWithdrawals: 0,
+        totalTransfers: 2,
+        fundingPattern: "lump_sum",
+        dataStatus: "ok",
+        dateRange: { from: daysAgo(120).slice(0, 10), to: daysAgo(45).slice(0, 10) },
+      },
+      content:
+        "Fund Flow — bybit\n- 2 deposits, 0 withdrawals\n- Lump-sum funding; account used as a holding venue",
     },
   ],
   investorProfile: {

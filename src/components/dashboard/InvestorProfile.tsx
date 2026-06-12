@@ -23,10 +23,19 @@ function SourceBadge({ source }: { source: "llm" | "deterministic" }) {
 }
 
 export function InvestorProfile() {
-  const { investorProfile, profileGenerating, generateProfile, hasPortfolio } = useDashboard();
+  const { investorProfile, profileGenerating, generateProfile, hasPortfolio, notes, notesUpdatedAt } =
+    useDashboard();
 
   // Nothing to show and nothing to generate from — stay out of the way.
   if (!investorProfile && !hasPortfolio) return null;
+
+  // Notes edited after the profile was generated → the profile no longer reflects
+  // the user's stated intent (agents are told the notes win; nudge a regenerate).
+  const profileStale =
+    !!investorProfile &&
+    !!notes.trim() &&
+    !!notesUpdatedAt &&
+    new Date(notesUpdatedAt).getTime() > new Date(investorProfile.generatedAt).getTime();
 
   return (
     <section>
@@ -59,6 +68,18 @@ export function InvestorProfile() {
           </button>
         )}
       </div>
+
+      {profileStale && !profileGenerating && (
+        <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3.5 py-2.5 text-xs text-amber-800">
+          <svg className="mt-0.5 h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          <span>
+            Your strategy notes changed after this profile was generated — agents are told to trust
+            the notes, but hit <span className="font-medium">Regenerate</span> to fold them in.
+          </span>
+        </div>
+      )}
 
       {!investorProfile ? (
         <div className="glass rounded-xl p-8 text-center">
