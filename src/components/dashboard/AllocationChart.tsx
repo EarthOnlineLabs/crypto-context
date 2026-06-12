@@ -1,6 +1,7 @@
 "use client";
 
 import type { Holding } from "./types";
+import { TokenIcon } from "@/components/icons/TokenIcon";
 
 const COLORS = [
   "#10b981", // emerald-500
@@ -92,6 +93,7 @@ export function AllocationChart({ holdings, totalValue }: Props) {
                 className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 style={{ backgroundColor: s.color }}
               />
+              {s.label !== "Other" && <TokenIcon symbol={s.label} size={18} />}
               <span className="text-gray-700 truncate flex-1">{s.label}</span>
               <span className="text-gray-400 text-xs tabular-nums">{s.pct}%</span>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Holding } from "./types";
+import { TokenIcon } from "@/components/icons/TokenIcon";
 
 const BAR_COLORS = [
   "bg-emerald-500",
@@ -34,9 +35,7 @@ export function HoldingsTable({ holdings }: Props) {
       <div className="divide-y divide-gray-50">
         {holdings.map((h, i) => (
           <div key={h.asset} className="px-5 py-3 flex items-center gap-3 hover:bg-gray-50/50 transition">
-            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
-              {h.asset.slice(0, 3)}
-            </div>
+            <TokenIcon symbol={h.asset} size={32} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-900">{h.asset}</span>

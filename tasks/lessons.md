@@ -85,3 +85,18 @@ Next 16 dev (Turbopack) reused a stale on-disk cache in `.next/` from a previous
 1. Symptom check: in DevTools, scan `document.styleSheets` for a new class name — 0 hits while old custom classes match → stale compiled CSS, not a code bug.
 2. Stop the dev server, delete the `.next` directory (use a relative path from the app dir — the safety hook blocks absolute-path recursive deletes), restart.
 3. Headless-preview gotcha: programmatic scroll + screenshot can capture an unpainted (white) frame; instead resize the viewport tall (e.g. 1440x4900) and capture the whole page in one frame.
+
+---
+
+## 2026-06-12: Never Hand-Draw Third-Party Brand Logos
+
+### Problem
+Hand-drew "simplified" SVG marks for exchange/wallet brands (approximated geometry + official colors). User immediately read them as counterfeit ("纯山寨") — worse for trust than plain letter tiles.
+
+### Rule
+For ANY third-party brand mark: use the real, authoritative asset, never a redrawing.
+Authoritative sources that work:
+- Tokens/coins + exchanges: CoinGecko asset CDN (assets.coingecko.com) — official logos, uniform sizing
+- Wallet apps / projects: the org's own GitHub avatar (github.com/{org}.png?size=128) or official brand-kit repos
+- Chains: native-token logo by convention; base-org avatar for Base
+Bundle them locally (public/) so there is no runtime third-party dependency. Letter tiles are the only acceptable fallback for unknown ids. Own-brand marks (our logo) are the only thing we draw ourselves.
