@@ -304,9 +304,13 @@ export function generateFullContext(
       meta.notesUpdatedAt &&
       new Date(meta.notesUpdatedAt).getTime() > new Date(meta.profileGeneratedAt).getTime()
     ) {
+      const notesDate = meta.notesUpdatedAt.slice(0, 10);
+      const profileDate = meta.profileGeneratedAt.slice(0, 10);
+      // Same-day edits make a date comparison read as a contradiction — drop it.
+      const dates = notesDate !== profileDate ? ` (notes ${notesDate} vs profile ${profileDate})` : "";
       sections.push("");
       sections.push(
-        `> ⚠ The Investor Notes above were updated after this profile was generated (notes ${meta.notesUpdatedAt.slice(0, 10)} vs profile ${meta.profileGeneratedAt.slice(0, 10)}). Where they disagree, the user's notes are authoritative.`,
+        `> ⚠ The Investor Notes above were updated after this profile was generated${dates}. Where they disagree, the user's notes are authoritative.`,
       );
     }
     sections.push("");
