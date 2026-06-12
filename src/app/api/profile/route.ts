@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     venues,
     tradingDocs,
     fundFlowDocs,
-    notes,
+    notes: notes.content,
   };
 
   const profile = await generateInvestorProfile(input);

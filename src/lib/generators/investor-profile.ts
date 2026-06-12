@@ -266,8 +266,14 @@ export async function generateInvestorProfile(input: ProfileInput): Promise<Inve
 /** Render the profile as the headline markdown section for MCP context. */
 export function renderProfileMarkdown(profile: InvestorProfileData): string {
   const lines: string[] = [];
+  const generatedDate = profile.generatedAt ? profile.generatedAt.slice(0, 10) : null;
+  const sourceLabel =
+    profile.source === "llm" ? "AI-written from computed facts" : "rule-based";
   lines.push("# Investor Profile");
   lines.push(`> ${profile.summary}`);
+  if (generatedDate) {
+    lines.push(`> *(${sourceLabel}, generated ${generatedDate})*`);
+  }
   lines.push("");
   if (profile.tradingStyle) {
     lines.push(`**Trading style:** ${profile.tradingStyle}`);

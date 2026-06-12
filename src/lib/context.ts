@@ -1,6 +1,19 @@
 import type { PortfolioSnapshot, PortfolioHolding } from "./exchange";
 import type { WalletSnapshot } from "./wallet";
 
+/**
+ * Per-source fetch outcome, rendered into the context so the reading AI knows
+ * whether the picture is complete and how fresh each venue's numbers are.
+ */
+export interface SourceStatus {
+  /** e.g. "binance" or "ethereum:0x3641…dcc3" */
+  label: string;
+  kind: "exchange" | "wallet";
+  status: "live" | "cached" | "unreachable";
+  /** When this source's data was actually fetched (null when unreachable). */
+  fetchedAt: string | null;
+}
+
 function formatUsd(value: number): string {
   return `$${value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
@@ -9,11 +22,51 @@ function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`;
 }
 
+function formatSyncTime(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
+}
+
+const STATUS_LABELS: Record<SourceStatus["status"], string> = {
+  live: "live",
+  cached: "cached snapshot (live fetch failed)",
+  unreachable: "unreachable (no cached data)",
+};
+
+function renderSourceStatuses(statuses: SourceStatus[]): string[] {
+  const lines: string[] = [];
+  lines.push("## Data Sources");
+  lines.push("");
+  lines.push("| Source | Type | Status | Data as of |");
+  lines.push("|--------|------|--------|------------|");
+  for (const s of statuses) {
+    lines.push(
+      `| ${s.label} | ${s.kind} | ${STATUS_LABELS[s.status]} | ${formatSyncTime(s.fetchedAt)} |`,
+    );
+  }
+  return lines;
+}
+
 export function generatePortfolioContext(
   snapshots: PortfolioSnapshot[],
-  walletSnapshots: WalletSnapshot[] = []
+  walletSnapshots: WalletSnapshot[] = [],
+  sourceStatuses: SourceStatus[] = []
 ): string {
   if (snapshots.length === 0 && walletSnapshots.length === 0) {
+    // Connected-but-unreachable is NOT the same as not-connected: the holdings
+    // are unknown right now, and the reading AI must not conclude "empty portfolio".
+    if (sourceStatuses.length > 0) {
+      const lines = [
+        "# Portfolio Snapshot",
+        `> ⚠ All ${sourceStatuses.length} connected source${sourceStatuses.length > 1 ? "s are" : " is"} currently unreachable and no cached data exists yet.`,
+        "> Holdings are UNKNOWN right now — do not treat this portfolio as empty. Suggest the user re-sync in a moment.",
+        "",
+        ...renderSourceStatuses(sourceStatuses),
+      ];
+      return lines.join("\n");
+    }
     return "# Portfolio\n\nNo exchanges or wallets connected yet.";
   }
 
@@ -91,6 +144,18 @@ export function generatePortfolioContext(
   lines.push(
     `> Total value: ${formatUsd(grandTotal)} (across ${sourceParts.join(" + ")})`
   );
+
+  const degraded = sourceStatuses.filter((s) => s.status !== "live");
+  if (degraded.length > 0) {
+    const cached = degraded.filter((s) => s.status === "cached");
+    const missing = degraded.filter((s) => s.status === "unreachable");
+    const parts: string[] = [];
+    if (cached.length > 0)
+      parts.push(`${cached.map((s) => s.label).join(", ")} shown from a cached snapshot`);
+    if (missing.length > 0)
+      parts.push(`${missing.map((s) => s.label).join(", ")} missing entirely`);
+    lines.push(`> ⚠ Incomplete picture: ${parts.join("; ")}. See Data Sources below.`);
+  }
   lines.push("");
 
   lines.push("## Holdings");
@@ -162,6 +227,11 @@ export function generatePortfolioContext(
     }
   }
 
+  if (sourceStatuses.length > 0) {
+    lines.push("");
+    lines.push(...renderSourceStatuses(sourceStatuses));
+  }
+
   return lines.join("\n");
 }
 
@@ -171,25 +241,50 @@ export interface ContextDocument {
   updated_at: string;
 }
 
+export interface FullContextMeta {
+  /** When the investor profile was generated (used to flag staleness vs notes). */
+  profileGeneratedAt?: string | null;
+  /** When the user last edited their strategy notes. */
+  notesUpdatedAt?: string | null;
+}
+
 export function generateFullContext(
   portfolioMd: string,
   contextDocs: ContextDocument[],
   investorProfileMd?: string,
   notesMd?: string,
+  meta: FullContextMeta = {},
 ): string {
   const sections: string[] = [];
+  const hasNotes = !!(notesMd && notesMd.trim());
+  const hasProfile = !!(investorProfileMd && investorProfileMd.trim());
+
+  const tradingProfiles = contextDocs.filter((d) => d.dimension === "trading_profile");
+  const fundFlows = contextDocs.filter((d) => d.dimension === "fund_flow");
+
+  // Header: what this document is and how the reading agent should treat it.
+  const contents: string[] = [];
+  if (hasNotes) contents.push("Investor Notes (the user's own words)");
+  if (hasProfile) contents.push("Investor Profile (synthesized)");
+  contents.push("Portfolio Snapshot");
+  if (tradingProfiles.length > 0) contents.push("Trading Profile (per exchange)");
+  if (fundFlows.length > 0) contents.push("Fund Flow (per exchange)");
 
   sections.push("# Crypto Investor Context");
   sections.push(`> Generated: ${new Date().toISOString()}`);
+  sections.push(
+    "> For the AI reading this: every figure below is computed from the user's actual exchange/wallet data — ground your advice in these numbers and never invent ones that aren't here. Check the Data Sources table for per-venue freshness before treating the picture as complete.",
+  );
+  sections.push(`> Contents: ${contents.join(" → ")}.`);
   sections.push("");
 
   // Investor notes LEAD the context — the user's OWN words (thesis, rules, ideas to
   // try). This is their explicit intent, so an agent should read it first, before the
   // AI synthesis, and it must never be buried. Only included when the user has written it.
-  if (notesMd && notesMd.trim()) {
+  if (hasNotes) {
     sections.push("# Investor Notes (the user's own strategy, in their words)");
     sections.push("");
-    sections.push(notesMd.trim());
+    sections.push(notesMd!.trim());
     sections.push("");
     sections.push("---");
     sections.push("");
@@ -197,8 +292,23 @@ export function generateFullContext(
 
   // Investor profile — the holistic AI synthesis of who this investor is.
   // Falls back gracefully when not yet generated.
-  if (investorProfileMd && investorProfileMd.trim()) {
-    sections.push(investorProfileMd.trim());
+  if (hasProfile) {
+    sections.push(investorProfileMd!.trim());
+
+    // A profile generated before the user's latest notes can contradict them
+    // (e.g. notes rewritten in another language, or a thesis change). Tell the
+    // agent which one wins instead of letting it reconcile silently.
+    if (
+      hasNotes &&
+      meta.profileGeneratedAt &&
+      meta.notesUpdatedAt &&
+      new Date(meta.notesUpdatedAt).getTime() > new Date(meta.profileGeneratedAt).getTime()
+    ) {
+      sections.push("");
+      sections.push(
+        `> ⚠ The Investor Notes above were updated after this profile was generated (notes ${meta.notesUpdatedAt.slice(0, 10)} vs profile ${meta.profileGeneratedAt.slice(0, 10)}). Where they disagree, the user's notes are authoritative.`,
+      );
+    }
     sections.push("");
     sections.push("---");
     sections.push("");
@@ -206,10 +316,6 @@ export function generateFullContext(
 
   // Portfolio (always included, real-time)
   sections.push(portfolioMd);
-
-  // Group by dimension, append each
-  const tradingProfiles = contextDocs.filter((d) => d.dimension === "trading_profile");
-  const fundFlows = contextDocs.filter((d) => d.dimension === "fund_flow");
 
   if (tradingProfiles.length > 0) {
     sections.push("");

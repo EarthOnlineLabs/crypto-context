@@ -153,6 +153,28 @@ create policy "Users update own strategy_notes" on strategy_notes
 create policy "Users delete own strategy_notes" on strategy_notes
   for delete using (auth.uid() = user_id);
 
+-- Wallet snapshot cache (latest data per wallet); see migrations/0004.
+-- Mirrors `snapshots` for exchanges: the fallback when a live RPC fetch fails,
+-- so a flaky chain RPC never silently drops a venue from the assembled context.
+create table if not exists wallet_snapshots (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  wallet_id uuid references wallets(id) on delete cascade not null unique,
+  data jsonb not null,
+  created_at timestamptz default now() not null
+);
+
+alter table wallet_snapshots enable row level security;
+
+create policy "Users read own wallet_snapshots" on wallet_snapshots
+  for select using (auth.uid() = user_id);
+create policy "Users insert own wallet_snapshots" on wallet_snapshots
+  for insert with check (auth.uid() = user_id);
+create policy "Users update own wallet_snapshots" on wallet_snapshots
+  for update using (auth.uid() = user_id);
+create policy "Users delete own wallet_snapshots" on wallet_snapshots
+  for delete using (auth.uid() = user_id);
+
 -- Indexes
 create index if not exists idx_connections_user on connections(user_id);
 create index if not exists idx_snapshots_connection on snapshots(connection_id);
@@ -160,3 +182,4 @@ create index if not exists idx_wallets_user on wallets(user_id);
 create index if not exists idx_mcp_tokens_hash on mcp_tokens(token_hash) where not revoked;
 create index if not exists idx_context_docs_user on context_documents(user_id);
 create index if not exists idx_context_docs_conn_dim on context_documents(connection_id, dimension);
+create index if not exists idx_wallet_snapshots_wallet on wallet_snapshots(wallet_id);

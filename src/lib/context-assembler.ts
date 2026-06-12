@@ -17,7 +17,12 @@ import {
   type PortfolioSnapshot,
 } from "@/lib/exchange";
 import { fetchWalletPortfolioForChain, type WalletSnapshot } from "@/lib/wallet";
-import { generatePortfolioContext, generateFullContext, type ContextDocument } from "@/lib/context";
+import {
+  generatePortfolioContext,
+  generateFullContext,
+  type ContextDocument,
+  type SourceStatus,
+} from "@/lib/context";
 import { rowToInvestorProfile, type InvestorProfileRow } from "@/lib/store";
 import { renderProfileMarkdown } from "@/lib/generators/investor-profile";
 
@@ -72,16 +77,35 @@ function isPortfolioSnapshot(value: unknown): value is PortfolioSnapshot {
   );
 }
 
-async function fetchAllPortfolios(userId: string): Promise<PortfolioSnapshot[]> {
+/** Minimal shape check before trusting a stored snapshot as a WalletSnapshot. */
+function isWalletSnapshot(value: unknown): value is WalletSnapshot {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    typeof (value as WalletSnapshot).address === "string" &&
+    Array.isArray((value as WalletSnapshot).holdings)
+  );
+}
+
+function shortWalletLabel(chain: string, address: string): string {
+  return `${chain}:${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+interface ExchangeFetchOutcome {
+  snapshots: PortfolioSnapshot[];
+  statuses: SourceStatus[];
+}
+
+async function fetchAllPortfolios(userId: string): Promise<ExchangeFetchOutcome> {
   const supabase = createServiceClient();
   // Load connections and their last stored snapshots together; snapshots serve as
   // the fallback when a live exchange fetch fails or exceeds its budget. Staleness
-  // stays visible to the agent via each snapshot's fetchedAt in the markdown.
+  // stays visible to the agent via the Data Sources block in the markdown.
   const [{ data: connections }, { data: storedRows }] = await Promise.all([
     supabase.from("connections").select("*").eq("user_id", userId),
     supabase.from("snapshots").select("connection_id, data").eq("user_id", userId),
   ]);
-  if (!connections || connections.length === 0) return [];
+  if (!connections || connections.length === 0) return { snapshots: [], statuses: [] };
 
   const stored = new Map<string, PortfolioSnapshot>();
   for (const row of storedRows ?? []) {
@@ -112,11 +136,13 @@ async function fetchAllPortfolios(userId: string): Promise<PortfolioSnapshot[]> 
   );
 
   const snapshots: PortfolioSnapshot[] = [];
+  const statuses: SourceStatus[] = [];
   for (let i = 0; i < connections.length; i++) {
     const conn = connections[i];
     const live = results[i];
     if (live) {
       snapshots.push(live);
+      statuses.push({ label: conn.exchange, kind: "exchange", status: "live", fetchedAt: live.fetchedAt });
       // Warm the cache (fire-and-forget) so MCP-heavy users always have a fallback.
       void supabase
         .from("snapshots")
@@ -129,16 +155,37 @@ async function fetchAllPortfolios(userId: string): Promise<PortfolioSnapshot[]> 
         });
     } else {
       const cached = stored.get(conn.id as string);
-      if (cached) snapshots.push(cached);
+      if (cached) {
+        snapshots.push(cached);
+        statuses.push({ label: conn.exchange, kind: "exchange", status: "cached", fetchedAt: cached.fetchedAt });
+      } else {
+        statuses.push({ label: conn.exchange, kind: "exchange", status: "unreachable", fetchedAt: null });
+      }
     }
   }
-  return snapshots;
+  return { snapshots, statuses };
 }
 
-async function fetchAllWallets(userId: string): Promise<WalletSnapshot[]> {
+interface WalletFetchOutcome {
+  snapshots: WalletSnapshot[];
+  statuses: SourceStatus[];
+}
+
+async function fetchAllWallets(userId: string): Promise<WalletFetchOutcome> {
   const supabase = createServiceClient();
-  const { data: wallets } = await supabase.from("wallets").select("*").eq("user_id", userId);
-  if (!wallets || wallets.length === 0) return [];
+  // Same fallback contract as exchanges: wallet_snapshots holds the last good
+  // fetch per wallet, so a flaky RPC degrades to "cached" instead of silently
+  // dropping the venue from the picture.
+  const [{ data: wallets }, { data: storedRows }] = await Promise.all([
+    supabase.from("wallets").select("*").eq("user_id", userId),
+    supabase.from("wallet_snapshots").select("wallet_id, data").eq("user_id", userId),
+  ]);
+  if (!wallets || wallets.length === 0) return { snapshots: [], statuses: [] };
+
+  const stored = new Map<string, WalletSnapshot>();
+  for (const row of storedRows ?? []) {
+    if (isWalletSnapshot(row.data)) stored.set(row.wallet_id as string, row.data);
+  }
 
   const results = await Promise.all(
     wallets.map((w) =>
@@ -154,16 +201,47 @@ async function fetchAllWallets(userId: string): Promise<WalletSnapshot[]> {
     ),
   );
 
-  return results.filter((s): s is WalletSnapshot => s !== null);
+  const snapshots: WalletSnapshot[] = [];
+  const statuses: SourceStatus[] = [];
+  for (let i = 0; i < wallets.length; i++) {
+    const w = wallets[i];
+    const label = shortWalletLabel(w.chain as string, w.address as string);
+    const live = results[i];
+    if (live) {
+      snapshots.push(live);
+      statuses.push({ label, kind: "wallet", status: "live", fetchedAt: live.fetchedAt });
+      void supabase
+        .from("wallet_snapshots")
+        .upsert(
+          { user_id: userId, wallet_id: w.id, data: live, created_at: new Date().toISOString() },
+          { onConflict: "wallet_id" },
+        )
+        .then(({ error }) => {
+          if (error) console.error("[context-assembler] wallet snapshot cache write failed:", error.message);
+        });
+    } else {
+      const cached = stored.get(w.id as string);
+      if (cached) {
+        snapshots.push(cached);
+        statuses.push({ label, kind: "wallet", status: "cached", fetchedAt: cached.fetchedAt });
+      } else {
+        statuses.push({ label, kind: "wallet", status: "unreachable", fetchedAt: null });
+      }
+    }
+  }
+  return { snapshots, statuses };
 }
 
 /** The portfolio snapshot markdown (also the input to the full context). */
 export async function assemblePortfolioMd(userId: string): Promise<string> {
-  const [snapshots, walletSnapshots] = await Promise.all([
+  const [exchanges, wallets] = await Promise.all([
     fetchAllPortfolios(userId),
     fetchAllWallets(userId),
   ]);
-  return generatePortfolioContext(snapshots, walletSnapshots);
+  return generatePortfolioContext(exchanges.snapshots, wallets.snapshots, [
+    ...exchanges.statuses,
+    ...wallets.statuses,
+  ]);
 }
 
 /**
@@ -177,7 +255,7 @@ export async function assembleFullContext(userId: string, portfolioMd?: string):
   const [{ data: contextDocs }, { data: profileRow }, { data: notesRow }] = await Promise.all([
     supabase.from("context_documents").select("dimension, content, updated_at").eq("user_id", userId),
     supabase.from("investor_profiles").select("*").eq("user_id", userId).maybeSingle(),
-    supabase.from("strategy_notes").select("content").eq("user_id", userId).maybeSingle(),
+    supabase.from("strategy_notes").select("content, updated_at").eq("user_id", userId).maybeSingle(),
   ]);
 
   const docs: ContextDocument[] = (contextDocs ?? []).map((d) => ({
@@ -191,7 +269,10 @@ export async function assembleFullContext(userId: string, portfolioMd?: string):
     : undefined;
   const notesMd = (notesRow?.content as string | undefined) || undefined;
 
-  return generateFullContext(md, docs, investorProfileMd, notesMd);
+  return generateFullContext(md, docs, investorProfileMd, notesMd, {
+    profileGeneratedAt: (profileRow?.generated_at as string | undefined) ?? null,
+    notesUpdatedAt: (notesRow?.updated_at as string | undefined) ?? null,
+  });
 }
 
 /** Mask dollar amounts for tokens scoped to "anonymized" permission. */

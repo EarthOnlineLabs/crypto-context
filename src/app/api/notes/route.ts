@@ -25,8 +25,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const notes = await getStrategyNotes(user.id);
-  return NextResponse.json({ notes });
+  const { content, updatedAt } = await getStrategyNotes(user.id);
+  return NextResponse.json({ notes: content, updatedAt });
 }
 
 export async function PUT(request: NextRequest) {

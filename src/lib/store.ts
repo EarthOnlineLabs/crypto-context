@@ -208,6 +208,31 @@ export async function saveSnapshot(
   if (error) throw new Error(`Failed to save snapshot: ${error.message}`);
 }
 
+/**
+ * Upsert the latest wallet snapshot (one per wallet — latest wins). The cache
+ * the context assembler falls back to when a live RPC fetch fails.
+ */
+export async function saveWalletSnapshot(
+  userId: string,
+  walletId: string,
+  data: object
+): Promise<void> {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("wallet_snapshots").upsert(
+    {
+      user_id: userId,
+      wallet_id: walletId,
+      data,
+      created_at: new Date().toISOString(),
+    },
+    { onConflict: "wallet_id" }
+  );
+
+  // Non-fatal: the live data is already in hand; the cache write is best-effort.
+  if (error) console.error("[store] saveWalletSnapshot failed:", error.message);
+}
+
 export async function getSnapshots(userId: string): Promise<StoredSnapshot[]> {
   const supabase = await createClient();
 
@@ -271,6 +296,8 @@ export interface StoredContextDocument {
   content: string;
   metadata: Record<string, unknown>;
   updated_at: string;
+  /** Joined from connections — identifies which venue this document describes. */
+  connections?: { exchange: string; label: string } | null;
 }
 
 export async function upsertContextDocument(
@@ -305,7 +332,7 @@ export async function getContextDocuments(
 
   let query = supabase
     .from("context_documents")
-    .select("*")
+    .select("*, connections(exchange, label)")
     .eq("user_id", userId);
 
   if (dimension) {
@@ -402,23 +429,29 @@ export async function getInvestorProfile(
 // ---------- Strategy Notes (user-authored, one row per user) ----------
 
 /**
- * Read the user's strategy notes. Returns "" when absent OR when the table isn't
- * provisioned yet (pre-migration) — callers treat empty notes as a soft state.
+ * Read the user's strategy notes (+ when they were last edited — used to flag a
+ * stale investor profile). Returns empty content when absent OR when the table
+ * isn't provisioned yet (pre-migration) — callers treat that as a soft state.
  */
-export async function getStrategyNotes(userId: string): Promise<string> {
+export async function getStrategyNotes(
+  userId: string,
+): Promise<{ content: string; updatedAt: string | null }> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("strategy_notes")
-    .select("content")
+    .select("content, updated_at")
     .eq("user_id", userId)
     .maybeSingle();
 
   if (error) {
     console.error("[store] getStrategyNotes failed (table missing?):", error.message);
-    return "";
+    return { content: "", updatedAt: null };
   }
-  return (data?.content as string | undefined) ?? "";
+  return {
+    content: (data?.content as string | undefined) ?? "",
+    updatedAt: (data?.updated_at as string | undefined) ?? null,
+  };
 }
 
 /** Upsert the user's strategy notes (one freeform doc per user). */

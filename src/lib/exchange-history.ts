@@ -53,6 +53,26 @@ export interface HistoryFetchResult<T> {
   error: string | null;
 }
 
+/**
+ * How much to trust a history fetch. Generators use this to distinguish
+ * "no activity" from "couldn't look" — conflating the two misleads the AI
+ * that reads the resulting context.
+ */
+export interface FetchQuality {
+  /** The exchange API exposes this data type at all. */
+  supported: boolean;
+  /** The fetch finished without hitting a page/time limit. */
+  complete: boolean;
+  error: string | null;
+}
+
+export function toFetchQuality<T>(
+  supported: boolean,
+  result: HistoryFetchResult<T>,
+): FetchQuality {
+  return { supported, complete: result.complete, error: result.error };
+}
+
 const PAGE_SIZE = 100;
 const MAX_PAGES = 20;
 const MAX_FETCH_TIME_MS = 45_000;

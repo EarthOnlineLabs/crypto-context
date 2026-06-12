@@ -5,6 +5,7 @@ import {
   fetchOrderHistory,
   fetchOpenOrdersList,
   fetchTransferHistory,
+  toFetchQuality,
   type TradeRecord,
   type OrderRecord,
   type TransferRecord,
@@ -104,6 +105,7 @@ export async function syncExchangeContext(
       closedOrders,
       openOrders,
       exchangeId,
+      toFetchQuality(capabilities.fetchMyTrades, tradeResult),
     );
 
     await upsertFn(userId, connection.id, "trading_profile", markdown, metadata);
@@ -122,9 +124,11 @@ export async function syncExchangeContext(
   try {
     const transferResult = await fetchTransferHistory(exchange);
 
+    const transfersSupported = capabilities.fetchDeposits || capabilities.fetchWithdrawals;
     const { markdown, metadata } = generateFundFlow(
       transferResult.data,
       exchangeId,
+      toFetchQuality(transfersSupported, transferResult),
     );
 
     await upsertFn(userId, connection.id, "fund_flow", markdown, metadata);
