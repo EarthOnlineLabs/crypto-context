@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/ui";
 
@@ -11,6 +11,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+/** Editorial serif reserved for the thesis/manifesto moments on the landing page. */
+const newsreader = Newsreader({
+  variable: "--font-editorial",
+  subsets: ["latin"],
+  style: ["italic"],
+  weight: ["400", "500"],
 });
 
 const SITE_URL = "https://cryptocontext.aiself.site";
@@ -64,7 +72,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-gray-900">
         <AppProviders>{children}</AppProviders>

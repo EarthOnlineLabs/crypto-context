@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-/** iOS home-screen icon — emerald cube on a soft emerald tile. */
+/** iOS home-screen icon — the aperture mark on the dark brand tile. */
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
@@ -15,14 +15,34 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#ecfdf5",
+          backgroundColor: "#062E23",
           borderRadius: 36,
         }}
       >
-        <svg width="120" height="120" viewBox="0 0 64 64">
-          <path d="M32 12 L50 21 L32 30 L14 21 Z" fill="#059669" />
-          <path d="M14 25 L30 33 L30 50 L14 42 Z" fill="#10b981" />
-          <path d="M50 25 L34 33 L34 50 L50 42 Z" fill="#34d399" />
+        <svg width="130" height="130" viewBox="0 0 64 64">
+          <circle
+            cx="32"
+            cy="32"
+            r="22"
+            fill="none"
+            stroke="#34d399"
+            strokeWidth="5.5"
+            strokeLinecap="round"
+            strokeDasharray="103.7 34.5"
+            transform="rotate(128 32 32)"
+          />
+          <circle
+            cx="32"
+            cy="32"
+            r="12.5"
+            fill="none"
+            stroke="#6ee7b7"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray="58.9 19.6"
+            transform="rotate(-38 32 32)"
+          />
+          <circle cx="32" cy="32" r="5.5" fill="#a7f3d0" />
         </svg>
       </div>
     ),

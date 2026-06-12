@@ -3,6 +3,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-editorial: var(--font-editorial);
 }
 
 body {
@@ -14,6 +15,14 @@ body {
 .bg-grid {
   background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.06) 1px, transparent 0);
   background-size: 40px 40px;
+}
+
+/* Finer line-grid used behind the landing hero — reads as graph paper, not dots. */
+.bg-blueprint {
+  background-image:
+    linear-gradient(rgba(5, 150, 105, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(5, 150, 105, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 
 .glass {
@@ -80,6 +89,95 @@ select:-webkit-autofill {
   transform: translateY(-1px);
 }
 
+/* ---------- Landing design system ---------- */
+
+/* Mono uppercase section eyebrow — the page's recurring "spec sheet" voice. */
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #059669;
+}
+
+/* Deep-ink panel: the dark anchors (proof terminal, code, final CTA). */
+.ink-panel {
+  position: relative;
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 50%),
+    radial-gradient(100% 80% at 90% 110%, rgba(20, 184, 166, 0.1) 0%, transparent 55%),
+    linear-gradient(160deg, #0a1612 0%, #07110d 55%, #081410 100%);
+  border: 1px solid rgba(52, 211, 153, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(110, 231, 183, 0.08),
+    0 24px 60px -24px rgba(6, 46, 35, 0.45);
+}
+
+/* Barely-there grain so large ink surfaces don't band. */
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Hairline card used for the light feature grid — crisper than .glass. */
+.card-hairline {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  border: 1px solid rgba(9, 36, 27, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(6, 46, 35, 0.05);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-hairline:hover {
+  border-color: rgba(5, 150, 105, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 12px 32px -12px rgba(5, 150, 105, 0.18);
+  transform: translateY(-2px);
+}
+
+/* Orchestrated hero load: each child fades up with a stagger. */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-stagger > * {
+  opacity: 0;
+  animation: riseIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-stagger > *:nth-child(2) { animation-delay: 0.16s; }
+.hero-stagger > *:nth-child(3) { animation-delay: 0.28s; }
+.hero-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.hero-stagger > *:nth-child(5) { animation-delay: 0.55s; }
+
+/* Venue ticker — one seamless loop of the supported exchanges + chains. */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 48s linear infinite;
+}
+.ticker-mask {
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
+
+/* Terminal caret blink for the proof transcript. */
+@keyframes caretBlink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+.caret-blink { animation: caretBlink 1.1s steps(1) infinite; }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -103,4 +201,6 @@ select:-webkit-autofill {
     transition-duration: 0.001ms !important;
   }
   html { scroll-behavior: auto; }
+  .hero-stagger > * { opacity: 1; }
+  .ticker-track { animation: none; }
 }

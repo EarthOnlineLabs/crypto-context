@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { LogoWordmark } from "@/components/Logo";
 import { useDashboard } from "./DashboardProvider";
 
 interface NavItem {
@@ -64,27 +65,7 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 function Wordmark() {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-        <svg
-          className="w-3.5 h-3.5 text-emerald-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-          />
-        </svg>
-      </div>
-      <span className="font-semibold text-sm text-gray-900">CryptoContext</span>
-    </div>
-  );
+  return <LogoWordmark size="sm" />;
 }
 
 function NavLinks({

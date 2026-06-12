@@ -1,24 +1,34 @@
 import Link from "next/link";
+import { LogoMark, LogoWordmark } from "@/components/Logo";
 
 const GITHUB_URL = "https://github.com/0xrikt/crypto-context";
 
+/** Every supported venue — the ticker makes "comprehensive" tangible. */
+const VENUES = [
+  "Binance", "OKX", "Bybit", "Coinbase", "Kraken", "Bitget", "KuCoin", "Gate.io",
+  "HTX", "MEXC", "Crypto.com", "BingX", "Bitfinex", "Gemini", "Bitstamp", "Upbit",
+  "Ethereum", "BNB Chain", "Polygon", "Arbitrum", "Base", "Optimism", "Avalanche", "Solana",
+];
+
+function ArrowIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+    </svg>
+  );
+}
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-grid relative overflow-hidden">
-      {/* Gradient glow behind hero */}
-      <div className="glow top-[-100px] left-1/2 -translate-x-1/2" />
-      <div className="glow top-[500px] right-[-200px] opacity-50" />
+    <div className="min-h-screen bg-blueprint relative overflow-hidden">
+      {/* Gradient glows behind hero */}
+      <div className="glow top-[-120px] left-1/2 -translate-x-1/2 scale-150" />
+      <div className="glow top-[480px] right-[-220px] opacity-60" />
+      <div className="glow top-[1200px] left-[-260px] opacity-40" />
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-            <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-          <span className="text-lg font-semibold tracking-tight text-gray-900">CryptoContext</span>
-        </div>
+        <LogoWordmark />
         <div className="flex items-center gap-3">
           <a
             href={GITHUB_URL}
@@ -54,68 +64,89 @@ export default function Home() {
 
       {/* Hero */}
       <main className="relative z-10">
-        <section className="max-w-5xl mx-auto px-6 pt-24 pb-14 sm:pt-32 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-xs text-emerald-700 mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            MCP-native · Open source · $0 to run
-          </div>
+        <section className="max-w-5xl mx-auto px-6 pt-20 pb-10 sm:pt-28 text-center">
+          <div className="hero-stagger">
+            <div className="inline-flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-1.5 rounded-full border border-emerald-600/20 bg-white/70 backdrop-blur text-[10px] sm:text-[11px] font-mono tracking-[0.1em] sm:tracking-[0.14em] uppercase text-emerald-700 mb-8 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              MCP-native · Open source · $0 to run
+            </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.04] text-gray-900">
-            Not your context,
-            <br />
-            <span className="text-gradient">not your AI.</span>
-          </h1>
+            <h1 className="text-[2.75rem] sm:text-6xl lg:text-[5rem] font-bold tracking-[-0.035em] leading-[1.02] text-gray-900">
+              Not your context,
+              <br />
+              <span className="text-gradient">not your AI.</span>
+            </h1>
 
-          <p className="mt-7 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Your coins are scattered across exchanges and wallets, so every AI
-            gives you generic advice. CryptoContext unifies your whole footprint —
-            and how you trade — into one context any agent can query over MCP.
-          </p>
+            <p className="mt-7 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              Your coins are scattered across exchanges and wallets, so every AI
+              gives you generic advice. CryptoContext unifies your whole footprint —
+              and how you trade — into one context any agent can query over MCP.
+            </p>
 
-          <div className="mt-10 flex flex-wrap gap-4 justify-center">
-            <Link
-              href="/signup"
-              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-200/50 flex items-center gap-2"
-            >
-              Connect your portfolio
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
-            <Link
-              href="/demo"
-              className="px-6 py-3 border border-gray-200 hover:border-emerald-300 rounded-lg text-sm text-gray-600 hover:text-gray-900 transition flex items-center gap-2"
-            >
-              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z" />
-              </svg>
-              Try the live demo
-            </Link>
+            <div className="mt-10 flex flex-wrap gap-4 justify-center">
+              <Link
+                href="/signup"
+                className="group px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-200/60 flex items-center gap-2"
+              >
+                Connect your portfolio
+                <span className="transition-transform group-hover:translate-x-0.5">
+                  <ArrowIcon />
+                </span>
+              </Link>
+              <Link
+                href="/demo"
+                className="px-6 py-3 bg-white/70 backdrop-blur border border-gray-300/80 hover:border-emerald-400 rounded-lg text-sm text-gray-700 hover:text-gray-900 transition flex items-center gap-2"
+              >
+                <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z" />
+                </svg>
+                Try the live demo
+              </Link>
+            </div>
+
+            {/* Venue ticker — 16 exchanges + 8 chains, made tangible */}
+            <div className="mt-14 ticker-mask overflow-hidden" aria-hidden="true">
+              <div className="ticker-track gap-8 text-[11px] font-mono uppercase tracking-[0.16em] text-gray-400">
+                {[0, 1].map((dup) => (
+                  <div key={dup} className="flex shrink-0 items-center gap-8 pr-8">
+                    {VENUES.map((v) => (
+                      <span key={`${dup}-${v}`} className="flex items-center gap-8 whitespace-nowrap">
+                        {v}
+                        <span className="h-0.5 w-0.5 rounded-full bg-emerald-500/60" />
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="mt-3 text-[11px] font-mono uppercase tracking-[0.16em] text-gray-400">
+              16 exchanges · 8 chains · one context
+            </p>
           </div>
         </section>
 
-        {/* Proof: real AI transcript */}
-        <section className="max-w-4xl mx-auto px-6 pb-20">
-          <div className="glass rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200/80">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                <span className="text-xs text-gray-400 font-mono">claude · crypto-context connected</span>
+        {/* Proof: real AI transcript — the dark anchor */}
+        <section className="max-w-4xl mx-auto px-6 pt-8 pb-20">
+          <div className="ink-panel noise rounded-2xl overflow-hidden">
+            <div className="relative flex items-center justify-between px-5 py-3.5 border-b border-emerald-300/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/90 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
+                <span className="text-xs text-emerald-100/60 font-mono">claude · crypto-context connected</span>
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-gray-300">example</span>
+              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-100/30">example</span>
             </div>
-            <div className="p-5 sm:p-7 space-y-5 text-sm leading-relaxed">
+            <div className="relative p-5 sm:p-8 space-y-5 text-sm leading-relaxed">
               {/* user turn */}
               <div className="flex gap-3">
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs font-medium">you</span>
-                <p className="text-gray-700 pt-0.5">Be honest — what&apos;s wrong with my portfolio?</p>
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-white/10 text-emerald-50/80 flex items-center justify-center text-xs font-medium">you</span>
+                <p className="text-emerald-50/90 pt-0.5">Be honest — what&apos;s wrong with my portfolio?</p>
               </div>
 
               {/* tool call chip */}
               <div className="flex gap-3">
                 <span className="flex-shrink-0 w-7 h-7" />
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-gray-50 border border-gray-200 text-xs font-mono text-gray-400">
-                  <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-400/10 border border-emerald-300/20 text-xs font-mono text-emerald-200/90">
+                  <svg className="w-3 h-3 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                   called get_context()
@@ -124,29 +155,28 @@ export default function Home() {
 
               {/* assistant turn */}
               <div className="flex gap-3">
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-medium">AI</span>
-                <div className="text-gray-700 space-y-3 pt-0.5">
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-400/15 text-emerald-300 flex items-center justify-center text-xs font-medium ring-1 ring-inset ring-emerald-300/20">AI</span>
+                <div className="text-emerald-50/80 space-y-3 pt-0.5">
+                  <p>Three things stand out, and they&apos;re connected:</p>
                   <p>
-                    Three things stand out, and they&apos;re connected:
-                  </p>
-                  <p>
-                    <span className="font-medium text-gray-900">1. Your conviction and your attention are in different places.</span>{" "}
+                    <span className="font-medium text-emerald-50">1. Your conviction and your attention are in different places.</span>{" "}
                     BTC + ETH are 70% of your book — that&apos;s your thesis. But 11 of your
                     last 14 trades were SOL, WIF and JUP. You&apos;re a long-term holder who
                     keeps day-trading memes on the side, and the fees are adding up
                     (~$430 in 90 days).
                   </p>
                   <p>
-                    <span className="font-medium text-gray-900">2. You have no dry powder.</span>{" "}
+                    <span className="font-medium text-emerald-50">2. You have no dry powder.</span>{" "}
                     Stablecoins are 3%. Your own history shows you buy the majors on
                     20%+ dips — but if one comes now, you have almost nothing to deploy
                     without selling at a loss. That&apos;s the gap to fix.
                   </p>
                   <p>
-                    <span className="font-medium text-gray-900">3. The disciplined part:</span>{" "}
+                    <span className="font-medium text-emerald-50">3. The disciplined part:</span>{" "}
                     your weekly ETH DCA is steady and your deposits are net-positive —
                     you&apos;re in accumulation mode. Keep the DCA. Just route some of the
                     meme-churn capital into a stable reserve instead.
+                    <span className="caret-blink ml-1 inline-block h-3.5 w-[7px] translate-y-0.5 bg-emerald-300/80" />
                   </p>
                 </div>
               </div>
@@ -160,33 +190,38 @@ export default function Home() {
         {/* Differentiation */}
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900">Not another portfolio tracker</h2>
+            <div className="eyebrow mb-3">Why it&apos;s different</div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">Not another portfolio tracker</h2>
             <p className="mt-3 text-gray-400 text-sm max-w-xl mx-auto">
               Trackers are dashboards for you to look at. CryptoContext is a context layer for your AI to reason with.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-3 gap-5">
             {[
               {
+                n: "01",
                 title: "Built for AI, not for staring",
                 desc: "Your positions become clean, queryable context an agent can reason over — concentration, allocation, risk flags — not a chart you decode yourself.",
                 icon: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z",
               },
               {
+                n: "02",
                 title: "Knows how you trade",
                 desc: "Not just what you hold. It surfaces your trading patterns, DCA habits and fund flows — so advice is about you, not a textbook investor.",
                 icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z",
               },
               {
+                n: "03",
                 title: "Every venue, one picture",
                 desc: "Binance, Bybit, an Ethereum wallet, a Solana wallet — unified into one complete view. The point: your AI finally sees all of it at once.",
                 icon: "M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418",
               },
             ].map((item) => (
-              <div key={item.title} className="glass rounded-xl p-6">
-                <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div key={item.title} className="card-hairline rounded-2xl p-6 relative overflow-hidden">
+                <div className="absolute right-5 top-5 text-[11px] font-mono text-emerald-600/40">{item.n}</div>
+                <div className="w-11 h-11 rounded-xl bg-emerald-600/10 text-emerald-700 flex items-center justify-center mb-5 ring-1 ring-inset ring-emerald-600/15">
+                  <svg className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                   </svg>
                 </div>
@@ -200,11 +235,14 @@ export default function Home() {
         {/* How it works */}
         <section id="how-it-works" className="max-w-6xl mx-auto px-6 py-16">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900">How it works</h2>
+            <div className="eyebrow mb-3">How it works</div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">Three steps, two minutes</h2>
             <p className="mt-3 text-gray-400 text-sm">Three steps to give every AI agent your full portfolio context.</p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="relative grid sm:grid-cols-3 gap-5">
+            {/* connector line between the steps (desktop) */}
+            <div className="hidden sm:block absolute top-[3.4rem] left-[18%] right-[18%] border-t border-dashed border-emerald-600/25" aria-hidden="true" />
             {[
               {
                 step: "01",
@@ -225,13 +263,13 @@ export default function Home() {
                 icon: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z",
               },
             ].map((item) => (
-              <div key={item.step} className="glass rounded-xl p-6 hover:border-gray-300 transition group">
-                <div className="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div key={item.step} className="card-hairline rounded-2xl p-6 relative">
+                <div className="relative z-10 w-11 h-11 rounded-xl bg-white text-emerald-700 flex items-center justify-center mb-5 ring-1 ring-inset ring-emerald-600/25 shadow-sm">
+                  <svg className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                   </svg>
                 </div>
-                <div className="text-xs text-gray-300 font-mono mb-2">{item.step}</div>
+                <div className="text-[11px] font-mono tracking-[0.16em] text-emerald-600/60 mb-2">STEP {item.step}</div>
                 <h3 className="font-semibold text-gray-900">{item.title}</h3>
                 <p className="mt-2 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
               </div>
@@ -242,29 +280,30 @@ export default function Home() {
         {/* Code block */}
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-center text-gray-900">One command to connect</h2>
+            <div className="eyebrow mb-3 text-center">Connect</div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-center text-gray-900">One command to connect</h2>
             <p className="mt-3 text-center text-gray-400 text-sm">Use it anywhere — over MCP, as a portable skill, or one-click copy-paste into ChatGPT, OpenClaw, and the rest.</p>
 
-            <div className="code-block mt-8 rounded-xl overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
-                <span className="w-3 h-3 rounded-full bg-gray-300" />
-                <span className="w-3 h-3 rounded-full bg-gray-300" />
-                <span className="w-3 h-3 rounded-full bg-gray-300" />
-                <span className="ml-3 text-xs text-gray-400 font-mono">terminal</span>
+            <div className="ink-panel noise mt-8 rounded-2xl overflow-hidden">
+              <div className="relative flex items-center gap-2 px-4 py-3 border-b border-emerald-300/10">
+                <span className="w-3 h-3 rounded-full bg-white/10" />
+                <span className="w-3 h-3 rounded-full bg-white/10" />
+                <span className="w-3 h-3 rounded-full bg-white/10" />
+                <span className="ml-3 text-xs text-emerald-100/40 font-mono">terminal</span>
               </div>
-              <div className="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-                <span className="text-emerald-600">$</span>{" "}
-                <span className="text-gray-700">claude mcp add</span>{" "}
-                <span className="text-gray-400">--transport</span>{" "}
-                <span className="text-teal-600">http</span>{" "}
-                <span className="text-gray-700">crypto-ctx \</span>
+              <div className="relative p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+                <span className="text-emerald-400">$</span>{" "}
+                <span className="text-emerald-50/90">claude mcp add</span>{" "}
+                <span className="text-emerald-100/50">--transport</span>{" "}
+                <span className="text-teal-300">http</span>{" "}
+                <span className="text-emerald-50/90">crypto-ctx \</span>
                 <br />
                 {"  "}
-                <span className="text-teal-700">https://cryptocontext.aiself.site/api/mcp</span>{" "}
-                <span className="text-gray-400">--header</span>{" "}
-                <span className="text-gray-700">&quot;Authorization: Bearer</span>{" "}
-                <span className="text-emerald-600">YOUR_TOKEN</span>
-                <span className="text-gray-700">&quot;</span>
+                <span className="text-teal-300">https://cryptocontext.aiself.site/api/mcp</span>{" "}
+                <span className="text-emerald-100/50">--header</span>{" "}
+                <span className="text-emerald-50/90">&quot;Authorization: Bearer</span>{" "}
+                <span className="text-emerald-400">YOUR_TOKEN</span>
+                <span className="text-emerald-50/90">&quot;</span>
               </div>
             </div>
             <p className="mt-3 text-center text-xs text-gray-400">
@@ -276,12 +315,13 @@ export default function Home() {
         {/* Two on-ramps */}
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Try it in 30 seconds</h2>
+            <div className="eyebrow mb-3">Start small or go all-in</div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">Try it in 30 seconds</h2>
             <p className="mt-3 text-gray-400 text-sm">Start with zero risk. Go all-in when you&apos;re ready.</p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <div className="glass rounded-xl p-7">
-              <div className="text-xs font-mono text-gray-300 mb-3">START HERE</div>
+          <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
+            <div className="card-hairline rounded-2xl p-7">
+              <div className="text-[11px] font-mono tracking-[0.16em] text-gray-400 mb-3">START HERE</div>
               <h3 className="text-lg font-semibold text-gray-900">Paste a wallet address</h3>
               <p className="mt-2 text-sm text-gray-500 leading-relaxed">
                 Public data — zero risk, no API key. Drop in any address (even a
@@ -290,13 +330,12 @@ export default function Home() {
               </p>
               <Link href="/signup" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-500 transition">
                 Try with a wallet
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <ArrowIcon />
               </Link>
             </div>
-            <div className="glass rounded-xl p-7 border-emerald-200">
-              <div className="text-xs font-mono text-emerald-400 mb-3">THE FULL PICTURE</div>
+            <div className="card-hairline rounded-2xl p-7 !border-emerald-500/40 relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-400" aria-hidden="true" />
+              <div className="text-[11px] font-mono tracking-[0.16em] text-emerald-600 mb-3">THE FULL PICTURE</div>
               <h3 className="text-lg font-semibold text-gray-900">Connect everything</h3>
               <p className="mt-2 text-sm text-gray-500 leading-relaxed">
                 A single wallet is one slice. The real value is the complete view —
@@ -305,9 +344,7 @@ export default function Home() {
               </p>
               <Link href="/signup" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-500 transition">
                 Connect exchanges + wallets
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <ArrowIcon />
               </Link>
             </div>
           </div>
@@ -315,16 +352,20 @@ export default function Home() {
 
         {/* Security */}
         <section className="max-w-6xl mx-auto px-6 py-16">
-          <div className="glass rounded-xl p-8 sm:p-10">
-            <div className="flex flex-col sm:flex-row sm:items-start gap-8">
+          <div className="card-hairline rounded-2xl p-8 sm:p-10 relative overflow-hidden">
+            {/* watermark mark */}
+            <div className="absolute -right-16 -bottom-16 opacity-[0.05]" aria-hidden="true">
+              <LogoMark size={320} />
+            </div>
+            <div className="relative flex flex-col sm:flex-row sm:items-start gap-8">
               <div className="flex-1">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-xs text-emerald-700 mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-600/20 bg-emerald-50 text-[11px] font-mono tracking-[0.12em] uppercase text-emerald-700 mb-4">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                   </svg>
                   Security first · Open source
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Your keys, your control</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Your keys, your control</h2>
                 <p className="mt-3 text-sm text-gray-500 max-w-md leading-relaxed">
                   Read-only access, encrypted at rest, and fully open source — don&apos;t
                   trust us, read the code. We can never execute a trade or move a coin.
@@ -336,9 +377,7 @@ export default function Home() {
                   className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-500 transition"
                 >
                   Audit the source on GitHub
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
+                  <ArrowIcon />
                 </a>
               </div>
               <div className="flex-1 grid gap-3">
@@ -349,8 +388,8 @@ export default function Home() {
                   { text: "Delete all your data anytime", icon: "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3 text-sm">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-600/10 ring-1 ring-inset ring-emerald-600/15 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                       </svg>
                     </div>
@@ -362,68 +401,71 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Thesis */}
-        <section className="max-w-6xl mx-auto px-6 py-20">
+        {/* Thesis — the editorial moment */}
+        <section className="max-w-6xl mx-auto px-6 py-24">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">
+            <div className="eyebrow mb-5">The thesis</div>
+            <h2 className="text-3xl sm:text-[2.6rem] font-bold tracking-tight text-gray-900 leading-tight">
               Your investor identity should be{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">
-                yours
-              </span>
-              .
+              <span className="text-gradient">yours</span>.
             </h2>
-            <p className="mt-5 text-gray-500 leading-relaxed">
+            <p className="mt-6 text-gray-500 leading-relaxed">
               Every app traps your data to keep you inside its walls. CryptoContext is
               the opposite — an open, MCP-native layer you own and point at any agent.
               Switch from Claude to Cursor to whatever&apos;s next; your context comes
               with you.
             </p>
-            <p className="mt-8 text-2xl font-bold text-gray-900">
-              Not your context, not your AI.
+            <p
+              className="mt-10 text-3xl sm:text-4xl text-gray-900"
+              style={{ fontFamily: "var(--font-editorial), Georgia, serif", fontStyle: "italic" }}
+            >
+              &ldquo;Not your context, not your AI.&rdquo;
             </p>
           </div>
         </section>
 
-        {/* CTA */}
+        {/* CTA — ink finale */}
         <section className="max-w-6xl mx-auto px-6 pb-20 text-center">
-          <div className="glass rounded-2xl py-14 px-6">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-              Give your AI agents{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">
-                eyes
-              </span>
-              .
-            </h2>
-            <p className="mt-4 text-gray-400 max-w-md mx-auto text-sm">
-              Free. Open source. Connect your first source in under 2 minutes.
-            </p>
-            <Link
-              href="/signup"
-              className="mt-8 inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-200/50"
-            >
-              Get started — it&apos;s free
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
+          <div className="ink-panel noise rounded-3xl py-16 px-6 relative overflow-hidden">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.07]" aria-hidden="true">
+              <LogoMark size={560} variant="plain" className="[&_circle]:!stroke-emerald-300 [&_circle:last-child]:!fill-emerald-300" />
+            </div>
+            <div className="relative">
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-emerald-50">
+                Give your AI agents{" "}
+                <span className="text-gradient">eyes</span>.
+              </h2>
+              <p className="mt-4 text-emerald-100/50 max-w-md mx-auto text-sm">
+                Free. Open source. Connect your first source in under 2 minutes.
+              </p>
+              <Link
+                href="/signup"
+                className="group mt-9 inline-flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 rounded-xl text-sm font-semibold transition shadow-[0_0_40px_rgba(52,211,153,0.35)]"
+              >
+                Get started — it&apos;s free
+                <span className="transition-transform group-hover:translate-x-0.5">
+                  <ArrowIcon />
+                </span>
+              </Link>
+            </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-200 py-8">
+      <footer className="relative z-10 border-t border-gray-200 py-8 bg-white/60 backdrop-blur">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <div className="w-5 h-5 rounded bg-emerald-50 flex items-center justify-center">
-              <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <LogoMark size={20} variant="tile" />
             CryptoContext
+            <span className="text-gray-300">·</span>
+            <span className="text-xs text-gray-400">MIT licensed</span>
           </div>
-          <div className="flex items-center gap-5 text-xs text-gray-300">
+          <div className="flex items-center gap-5 text-xs text-gray-400">
             <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 transition">GitHub</a>
-            <span>Not your context, not your AI.</span>
+            <a href={`${GITHUB_URL}/blob/main/SECURITY.md`} target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 transition">Security</a>
+            <Link href="/demo" className="hover:text-gray-700 transition">Demo</Link>
+            <span className="font-mono text-[11px] tracking-wide text-gray-400">Not your context, not your AI.</span>
           </div>
         </div>
       </footer>
