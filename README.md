@@ -103,7 +103,7 @@ Deploy anywhere that runs Next.js. It's tuned for Vercel's free tier — total c
 
 ## How it works
 
-1. **Connect your venues.** Add exchanges with a read-only API key; paste wallet addresses. The app can never trade or withdraw — [read-only, always](SECURITY.md).
+1. **Connect your venues.** Add exchanges with a read-only API key. For wallets, pick your app (MetaMask, Phantom, …) and paste the address — one EVM address is scanned across all 7 chains and added wherever it holds value. The app can never trade or withdraw — [read-only, always](SECURITY.md).
 2. **Context is auto-generated.** Holdings, concentration, trading patterns, and fund flows are computed locally into hard facts; an LLM reads only that aggregated shape — never your keys or addresses — to write your investor profile. Your strategy notes ride along verbatim. Refreshed on every sync.
 3. **Any AI reads it.** Over MCP, as a portable skill, or pasted directly. All sources are fetched in parallel with per-source budgets and a snapshot fallback, so the answer comes fast even when one venue is slow.
 
