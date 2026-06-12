@@ -19,6 +19,8 @@ export const populatedMock: DashboardMock = {
     { id: "c2", exchange: "bybit", label: "API key", created_at: daysAgo(41) },
   ],
   wallets: [
+    // One MetaMask account tracked on two chains — the brand-first import
+    // creates these as one group (one card, chain chips inside).
     {
       id: "w1",
       address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
@@ -28,21 +30,21 @@ export const populatedMock: DashboardMock = {
       created_at: daysAgo(63),
     },
     {
-      // Same chain as w1, no label & no brand — proves two ETH wallets are now
-      // distinguishable (badge + always-visible address): the bug Batch C fixes.
+      id: "w2",
+      address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+      chain: "arbitrum",
+      label: "Main",
+      brand: "metamask",
+      created_at: daysAgo(63),
+    },
+    {
+      // No label & no brand — proves a raw address stays distinguishable
+      // (chain chip + always-visible address).
       id: "w4",
       address: "0x3a1f9C4b7E2d6F8091a2B3c4D5e6F7081923AbCd",
       chain: "ethereum",
       label: "",
       created_at: daysAgo(40),
-    },
-    {
-      id: "w2",
-      address: "0x9aF3b1C2D4e5F60718293A4b5C6d7E8f90123456",
-      chain: "arbitrum",
-      label: "DeFi",
-      brand: "rabby",
-      created_at: daysAgo(22),
     },
     {
       id: "w3",
@@ -71,7 +73,7 @@ export const populatedMock: DashboardMock = {
     ],
     walletSnapshots: [
       { address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F", chain: "ethereum", totalUsdValue: 14_300, holdingsCount: 3, fetchedAt: minutesAgo(9) },
-      { address: "0x9aF3b1C2D4e5F60718293A4b5C6d7E8f90123456", chain: "arbitrum", totalUsdValue: 6_800, holdingsCount: 2, fetchedAt: minutesAgo(9) },
+      { address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F", chain: "arbitrum", totalUsdValue: 6_800, holdingsCount: 2, fetchedAt: minutesAgo(9) },
       { address: "Fix7ureSo1anaWa11etDoNotUseRea1Funds1111111", chain: "solana", totalUsdValue: 4_200, holdingsCount: 2, fetchedAt: minutesAgo(9) },
     ],
     errors: [{ source: "okx", error: "Invalid API credentials" }],

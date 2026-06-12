@@ -22,6 +22,8 @@
 | 品牌 | 新 logo "the aperture"（同心断弧+核心点；favicon/apple-icon/OG 全套更新），统一 `src/components/Logo.tsx` |
 | 着陆页 | 视觉全面升级（文案与结构不变）：blueprint 网格、墨色证言终端与代码块、venue 跑马灯（16 exchanges · 8 chains）、连接线步骤卡、衬线体宣言、墨色 CTA 终章；hero 入场动画；移动端验证通过 |
 | 宣发物料 | launch/ 全套与产品事实重新对齐：16 exchanges/8 chains；移除一切 "no LLM" 表述（数字确定性计算 + 可选 LLM 仅读聚合事实写画像叙述）；运行手册加 2026-06-12 修订记录与下一个 HN 窗口（Jun 16–18 Tue–Thu, 8–10am ET） |
+| 品牌识别（第二批） | `src/components/icons/BrandLogo.tsx`：16 交易所 + 8 链 + 11 钱包 app 的统一 app-icon 风格内联 SVG（官方色块 + 几何 mark / 品牌色首字母，未知 id 降级 monogram）。落地页加 "Works with what you already use" logo 墙 + 带 logo 的 ticker；交易所连接表单换 logo 网格选择器；Context Insights 分组头带交易所 logo |
+| 钱包品牌优先导入（第二批） | 心智模型从"链+地址"换成"我的 MetaMask"：品牌选择网格 → 贴地址 → POST /api/wallet/scan 并行探测 7 条 EVM 链余额 → 预勾选有钱的链一键全加（multi 生态品牌给 EVM+Solana 双输入框；保留 Other 原始路径）。存储模型不变（仍是 address+chain 行，零 migration）。Data Sources 卡片按 (brand, address) 分组（一卡=一个钱包账户，链为 chip），整组删除一次确认；context 数据源标签带品牌（如 "ethereum:0x36…dcc3 (metamask)"） |
 
 ## 功能全景（全部已上线并在生产验证）
 

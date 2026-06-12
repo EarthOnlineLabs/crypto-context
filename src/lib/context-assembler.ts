@@ -87,8 +87,11 @@ function isWalletSnapshot(value: unknown): value is WalletSnapshot {
   );
 }
 
-function shortWalletLabel(chain: string, address: string): string {
-  return `${chain}:${address.slice(0, 6)}...${address.slice(-4)}`;
+function shortWalletLabel(chain: string, address: string, brand?: string | null): string {
+  const base = `${chain}:${address.slice(0, 6)}...${address.slice(-4)}`;
+  // The brand is how the USER refers to this wallet ("my MetaMask") — including
+  // it lets the agent connect their words to the right source.
+  return brand ? `${base} (${brand})` : base;
 }
 
 interface ExchangeFetchOutcome {
@@ -205,7 +208,7 @@ async function fetchAllWallets(userId: string): Promise<WalletFetchOutcome> {
   const statuses: SourceStatus[] = [];
   for (let i = 0; i < wallets.length; i++) {
     const w = wallets[i];
-    const label = shortWalletLabel(w.chain as string, w.address as string);
+    const label = shortWalletLabel(w.chain as string, w.address as string, w.brand as string | null);
     const live = results[i];
     if (live) {
       snapshots.push(live);

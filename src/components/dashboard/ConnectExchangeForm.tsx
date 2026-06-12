@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Alert, Button, Field, Input, Select } from "@/components/ui";
+import { Alert, Button, Field, Input } from "@/components/ui";
 import { EXCHANGE_OPTIONS } from "@/lib/exchange-names";
+import { BrandLogo } from "@/components/icons/BrandLogo";
+import { cn } from "@/lib/cn";
 
 const EXCHANGES = EXCHANGE_OPTIONS;
 
@@ -56,13 +58,28 @@ export function ConnectExchangeForm({ onConnect, onCancel }: Props) {
   return (
     <form onSubmit={handleSubmit} className="glass rounded-xl p-5 space-y-4">
       <Field label="Exchange">
-        <Select value={exchange} onChange={(e) => setExchange(e.target.value)}>
-          {EXCHANGES.map((ex) => (
-            <option key={ex.id} value={ex.id}>
-              {ex.name}
-            </option>
-          ))}
-        </Select>
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {EXCHANGES.map((ex) => {
+            const selected = exchange === ex.id;
+            return (
+              <button
+                key={ex.id}
+                type="button"
+                onClick={() => setExchange(ex.id)}
+                aria-pressed={selected}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-xs transition",
+                  selected
+                    ? "border-emerald-500/70 bg-emerald-50/70 text-gray-900 ring-1 ring-emerald-500/30"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-900"
+                )}
+              >
+                <BrandLogo id={ex.id} size={22} />
+                <span className="truncate">{ex.name}</span>
+              </button>
+            );
+          })}
+        </div>
       </Field>
 
       <Field label="API Key" hint="(read-only)">

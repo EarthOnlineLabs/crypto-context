@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { LogoMark, LogoWordmark } from "@/components/Logo";
+import { BrandLogo } from "@/components/icons/BrandLogo";
+import { EXCHANGE_DISPLAY_NAMES } from "@/lib/exchange-names";
+import { CHAIN_BRANDS, PICKER_WALLET_BRANDS } from "@/lib/wallets/brands";
 
 const GITHUB_URL = "https://github.com/0xrikt/crypto-context";
 
-/** Every supported venue — the ticker makes "comprehensive" tangible. */
-const VENUES = [
-  "Binance", "OKX", "Bybit", "Coinbase", "Kraken", "Bitget", "KuCoin", "Gate.io",
-  "HTX", "MEXC", "Crypto.com", "BingX", "Bitfinex", "Gemini", "Bitstamp", "Upbit",
-  "Ethereum", "BNB Chain", "Polygon", "Arbitrum", "Base", "Optimism", "Avalanche", "Solana",
-];
+/** Every supported venue, with its mark — the ticker makes "comprehensive" tangible. */
+const EXCHANGE_TILES = Object.entries(EXCHANGE_DISPLAY_NAMES).map(([id, name]) => ({ id, name }));
+const CHAIN_TILES = Object.values(CHAIN_BRANDS).map((b) => ({ id: b.id, name: b.name }));
+const WALLET_TILES = PICKER_WALLET_BRANDS.map((b) => ({ id: b.id, name: b.name }));
+const TICKER_TILES = [...EXCHANGE_TILES, ...CHAIN_TILES];
 
 function ArrowIcon() {
   return (
@@ -104,15 +106,18 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Venue ticker — 16 exchanges + 8 chains, made tangible */}
+            {/* Venue ticker — 16 exchanges + 8 chains, with their marks */}
             <div className="mt-14 ticker-mask overflow-hidden" aria-hidden="true">
-              <div className="ticker-track gap-8 text-[11px] font-mono uppercase tracking-[0.16em] text-gray-400">
+              <div className="ticker-track gap-7">
                 {[0, 1].map((dup) => (
-                  <div key={dup} className="flex shrink-0 items-center gap-8 pr-8">
-                    {VENUES.map((v) => (
-                      <span key={`${dup}-${v}`} className="flex items-center gap-8 whitespace-nowrap">
-                        {v}
-                        <span className="h-0.5 w-0.5 rounded-full bg-emerald-500/60" />
+                  <div key={dup} className="flex shrink-0 items-center gap-7 pr-7">
+                    {TICKER_TILES.map((v) => (
+                      <span
+                        key={`${dup}-${v.id}`}
+                        className="flex items-center gap-2 whitespace-nowrap text-[11px] font-mono uppercase tracking-[0.14em] text-gray-500"
+                      >
+                        <BrandLogo id={v.id} size={18} />
+                        {v.name}
                       </span>
                     ))}
                   </div>
@@ -229,6 +234,78 @@ export default function Home() {
                 <p className="mt-2 text-sm text-gray-500 leading-relaxed">{item.desc}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Supported venues wall — "they support what I already use" */}
+        <section className="max-w-6xl mx-auto px-6 py-16">
+          <div className="text-center mb-12">
+            <div className="eyebrow mb-3">Coverage</div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
+              Works with what you already use
+            </h2>
+            <p className="mt-3 text-gray-400 text-sm max-w-xl mx-auto">
+              Comprehensiveness is the whole point — a partial picture gives your AI false confidence.
+            </p>
+          </div>
+
+          <div className="card-hairline rounded-2xl p-6 sm:p-8 space-y-7">
+            <div>
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-gray-400">Exchanges</span>
+                <span className="text-[11px] font-mono text-emerald-600">16 supported · read-only keys</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+                {EXCHANGE_TILES.map((v) => (
+                  <div
+                    key={v.id}
+                    className="flex items-center gap-2 rounded-lg border border-gray-200/80 bg-white/70 px-2.5 py-2"
+                  >
+                    <BrandLogo id={v.id} size={22} />
+                    <span className="truncate text-xs text-gray-700">{v.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-gray-400">Chains</span>
+                <span className="text-[11px] font-mono text-emerald-600">8 supported · EVM + Solana</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+                {CHAIN_TILES.map((v) => (
+                  <div
+                    key={v.id}
+                    className="flex items-center gap-2 rounded-lg border border-gray-200/80 bg-white/70 px-2.5 py-2"
+                  >
+                    <BrandLogo id={v.id} size={22} />
+                    <span className="truncate text-xs text-gray-700">{v.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-gray-400">Wallets</span>
+                <span className="text-[11px] font-mono text-emerald-600">any address · zero keys</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {WALLET_TILES.map((v) => (
+                  <div
+                    key={v.id}
+                    className="flex items-center gap-2 rounded-lg border border-gray-200/80 bg-white/70 px-2.5 py-2"
+                  >
+                    <BrandLogo id={v.id} size={22} />
+                    <span className="text-xs text-gray-700">{v.name}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2.5 text-xs text-gray-400">
+                Paste an address from any of these — or any address at all. We read public balances; your keys never leave your wallet.
+              </p>
+            </div>
           </div>
         </section>
 

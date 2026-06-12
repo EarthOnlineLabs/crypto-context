@@ -9,8 +9,8 @@ export default function SourcesPage() {
     wallets,
     connectExchange,
     disconnectExchange,
-    connectWallet,
-    disconnectWallet,
+    connectWallets,
+    disconnectWalletGroup,
   } = useDashboard();
 
   return (
@@ -19,8 +19,8 @@ export default function SourcesPage() {
       wallets={wallets}
       onConnectExchange={connectExchange}
       onDisconnectExchange={disconnectExchange}
-      onConnectWallet={connectWallet}
-      onDisconnectWallet={disconnectWallet}
+      onConnectWallets={connectWallets}
+      onDisconnectWalletGroup={disconnectWalletGroup}
     />
   );
 }

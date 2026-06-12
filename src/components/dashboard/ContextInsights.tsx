@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import type { ContextDoc } from "./types";
 import { formatDate } from "@/lib/timeAgo";
 import { exchangeDisplayName } from "@/lib/exchange-names";
+import { BrandLogo } from "@/components/icons/BrandLogo";
 
 interface Props {
   documents: ContextDoc[];
@@ -256,9 +257,13 @@ export function ContextInsights({ documents }: Props) {
         {venues.map((venue) => (
           <div key={venue.key}>
             <div className="mb-2.5 flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-600/10 text-[10px] font-bold uppercase text-emerald-700">
-                {venueTitle(venue).charAt(0)}
-              </span>
+              {venue.exchange ? (
+                <BrandLogo id={venue.exchange} size={20} />
+              ) : (
+                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-600/10 text-[10px] font-bold uppercase text-emerald-700">
+                  {venueTitle(venue).charAt(0)}
+                </span>
+              )}
               <h3 className="text-sm font-semibold text-gray-800">{venueTitle(venue)}</h3>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

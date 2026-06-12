@@ -11,6 +11,15 @@
  * registry-only change.
  */
 
+/**
+ * Which of our supported ecosystems a wallet app lives in. Drives the
+ * brand-first import flow:
+ * - "evm":    one 0x address valid across all 7 EVM chains → scan & multi-add
+ * - "solana": one base58 address → single chain
+ * - "multi":  the app manages both — the form offers an EVM and a Solana field
+ */
+export type WalletEcosystem = "evm" | "solana" | "multi";
+
 export interface BrandStyle {
   /** Stable id persisted on the wallet row / derived from exchange or chain. */
   id: string;
@@ -20,23 +29,32 @@ export interface BrandStyle {
   color: string;
   /** 1-char monogram shown in the badge. */
   monogram: string;
+  /** Wallet apps only: which ecosystems the brand-first import should offer. */
+  ecosystem?: WalletEcosystem;
+  /** Hide from the picker (kept in the registry for stored rows). */
+  hidden?: boolean;
 }
 
-/** Self-custody wallet apps offered in the connect form's optional picker. */
+/** Self-custody wallet apps offered in the connect form's brand picker. */
 export const WALLET_BRANDS: BrandStyle[] = [
-  { id: "metamask", name: "MetaMask", color: "#F6851B", monogram: "M" },
-  { id: "phantom", name: "Phantom", color: "#AB9FF2", monogram: "P" },
-  { id: "rabby", name: "Rabby", color: "#7084FF", monogram: "R" },
-  { id: "coinbase", name: "Coinbase Wallet", color: "#0052FF", monogram: "C" },
-  { id: "trust", name: "Trust Wallet", color: "#3375BB", monogram: "T" },
-  { id: "okx", name: "OKX Wallet", color: "#1A1A1A", monogram: "O" },
-  { id: "rainbow", name: "Rainbow", color: "#FF5CAA", monogram: "R" },
-  { id: "bitget", name: "Bitget Wallet", color: "#00B4D8", monogram: "B" },
-  { id: "backpack", name: "Backpack", color: "#E33E3F", monogram: "B" },
-  { id: "keplr", name: "Keplr", color: "#6259FF", monogram: "K" },
-  { id: "ledger", name: "Ledger", color: "#1A1A1A", monogram: "L" },
-  { id: "safe", name: "Safe", color: "#12FF80", monogram: "S" },
+  { id: "metamask", name: "MetaMask", color: "#F6851B", monogram: "M", ecosystem: "evm" },
+  { id: "phantom", name: "Phantom", color: "#AB9FF2", monogram: "P", ecosystem: "multi" },
+  { id: "rabby", name: "Rabby", color: "#7084FF", monogram: "R", ecosystem: "evm" },
+  { id: "coinbase", name: "Coinbase Wallet", color: "#0052FF", monogram: "C", ecosystem: "multi" },
+  { id: "trust", name: "Trust Wallet", color: "#0500FF", monogram: "T", ecosystem: "multi" },
+  { id: "okx", name: "OKX Wallet", color: "#1A1A1A", monogram: "O", ecosystem: "multi" },
+  { id: "rainbow", name: "Rainbow", color: "#FF5CAA", monogram: "R", ecosystem: "evm" },
+  { id: "bitget", name: "Bitget Wallet", color: "#00B4D8", monogram: "B", ecosystem: "multi" },
+  { id: "backpack", name: "Backpack", color: "#E33E3F", monogram: "B", ecosystem: "multi" },
+  // Keplr is Cosmos-first — none of our chains; hidden from the picker but kept
+  // for any stored rows that already reference it.
+  { id: "keplr", name: "Keplr", color: "#6259FF", monogram: "K", hidden: true },
+  { id: "ledger", name: "Ledger", color: "#1A1A1A", monogram: "L", ecosystem: "multi" },
+  { id: "safe", name: "Safe", color: "#12FF80", monogram: "S", ecosystem: "evm" },
 ];
+
+/** Picker list: visible brands only. */
+export const PICKER_WALLET_BRANDS: BrandStyle[] = WALLET_BRANDS.filter((b) => !b.hidden);
 
 /** Chain identity, used for the badge when no wallet brand was chosen. */
 export const CHAIN_BRANDS: Record<string, BrandStyle> = {

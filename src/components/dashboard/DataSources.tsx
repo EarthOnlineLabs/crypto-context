@@ -3,36 +3,16 @@
 import { useState } from "react";
 import type { Connection, Wallet } from "./types";
 import { ConnectExchangeForm } from "./ConnectExchangeForm";
-import { AddWalletForm } from "./AddWalletForm";
+import { AddWalletForm, type WalletInput } from "./AddWalletForm";
 import { Button, Card, EmptyState, SectionHeader } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/timeAgo";
-import {
-  getExchangeBrand,
-  getChainBrand,
-  getWalletBrand,
-  resolveWalletStyle,
-  badgeBg,
-  badgeFg,
-  type BrandStyle,
-} from "@/lib/wallets/brands";
-
-/** Soft brand-tinted square + monogram. Logo-ready: swap monogram for an <img> later. */
-function IdentityBadge({ style }: { style: BrandStyle }) {
-  return (
-    <div
-      className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
-      style={{ backgroundColor: badgeBg(style.color), color: badgeFg(style.color) }}
-      aria-hidden="true"
-    >
-      {style.monogram}
-    </div>
-  );
-}
+import { getExchangeBrand, getChainBrand, getWalletBrand } from "@/lib/wallets/brands";
+import { BrandLogo } from "@/components/icons/BrandLogo";
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium px-2 py-0.5 capitalize flex-shrink-0">
+    <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium px-1.5 py-0.5 flex-shrink-0">
       {children}
     </span>
   );
@@ -65,22 +45,54 @@ function ActiveDot() {
   );
 }
 
+/**
+ * One card per brand+address: "a MetaMask account", not "7 chain rows".
+ * The chains stay visible as logo chips — they're the underlying truth.
+ */
+interface WalletGroup {
+  key: string;
+  brand: string | null;
+  address: string;
+  label: string;
+  rows: Wallet[];
+}
+
+function groupWallets(wallets: Wallet[]): WalletGroup[] {
+  const groups = new Map<string, WalletGroup>();
+  for (const w of wallets) {
+    const key = `${w.brand ?? ""}|${w.address.toLowerCase()}`;
+    const group = groups.get(key) ?? {
+      key,
+      brand: w.brand ?? null,
+      address: w.address,
+      label: w.label,
+      rows: [],
+    };
+    group.rows.push(w);
+    if (!group.label && w.label) group.label = w.label;
+    groups.set(key, group);
+  }
+  return Array.from(groups.values());
+}
+
 interface Props {
   connections: Connection[];
   wallets: Wallet[];
   onConnectExchange: (data: { exchange: string; apiKey: string; secret: string; password?: string }) => Promise<void>;
   onDisconnectExchange: (id: string) => void;
-  onConnectWallet: (data: { address: string; chain: string; label: string; brand?: string }) => Promise<void>;
-  onDisconnectWallet: (id: string) => void;
+  onConnectWallets: (items: WalletInput[]) => Promise<void>;
+  onDisconnectWalletGroup: (ids: string[]) => void;
 }
 
 export function DataSources({
   connections, wallets,
   onConnectExchange, onDisconnectExchange,
-  onConnectWallet, onDisconnectWallet,
+  onConnectWallets, onDisconnectWalletGroup,
 }: Props) {
   const [showExchangeForm, setShowExchangeForm] = useState(false);
   const [showWalletForm, setShowWalletForm] = useState(false);
+
+  const walletGroups = groupWallets(wallets);
 
   return (
     <section>
@@ -126,7 +138,7 @@ export function DataSources({
                 className="p-4 flex items-center justify-between group transition hover:border-gray-300"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <IdentityBadge style={style} />
+                  <BrandLogo id={c.exchange} size={36} />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm text-gray-900 truncate">{style.name}</span>
@@ -164,8 +176,8 @@ export function DataSources({
         {showWalletForm && (
           <div className="mb-3">
             <AddWalletForm
-              onConnect={async (data) => {
-                await onConnectWallet(data);
+              onConnect={async (items) => {
+                await onConnectWallets(items);
                 setShowWalletForm(false);
               }}
               onCancel={() => setShowWalletForm(false)}
@@ -173,47 +185,50 @@ export function DataSources({
           </div>
         )}
 
-        {wallets.length === 0 && !showWalletForm ? (
+        {walletGroups.length === 0 && !showWalletForm ? (
           <EmptyState
             compact
             icon={WalletIcon}
             title="No wallets tracked"
-            description="Add an EVM address to fold on-chain balances into your context."
+            description="Add your wallet — MetaMask, Phantom, or any address — to fold on-chain balances into your context."
           />
-        ) : wallets.length > 0 ? (
+        ) : walletGroups.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {wallets.map((w) => {
-              const style = resolveWalletStyle(w.brand, w.chain);
-              const chainName = getChainBrand(w.chain).name;
-              // Identity priority: user label → wallet-app brand → the address itself.
-              // The chain is demoted to a chip, and the address is always shown so two
-              // same-chain wallets are never indistinguishable.
-              const customName = (w.label && w.label.trim()) || getWalletBrand(w.brand)?.name || null;
-              const shortAddr = `${w.address.slice(0, 6)}…${w.address.slice(-4)}`;
+            {walletGroups.map((g) => {
+              const brandStyle = getWalletBrand(g.brand);
+              const shortAddr = `${g.address.slice(0, 6)}…${g.address.slice(-4)}`;
+              // Identity priority: user label → wallet-app brand → the address.
+              const name = (g.label && g.label.trim()) || brandStyle?.name || null;
+              const logoId = g.brand ?? g.rows[0].chain;
               return (
               <Card
-                key={w.id}
+                key={g.key}
                 className="p-4 flex items-center justify-between group transition hover:border-gray-300"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <IdentityBadge style={style} />
+                  <BrandLogo id={logoId} size={36} />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={cn("font-medium text-sm text-gray-900 truncate", !customName && "font-mono")}>
-                        {customName ?? shortAddr}
+                      <span className={cn("font-medium text-sm text-gray-900 truncate", !name && "font-mono")}>
+                        {name ?? shortAddr}
                       </span>
                       <ActiveDot />
                     </div>
-                    <div className="flex items-center gap-1.5 mt-1 min-w-0">
-                      <Chip>{chainName}</Chip>
-                      {customName && (
+                    <div className="flex items-center gap-1.5 mt-1 min-w-0 flex-wrap">
+                      {g.rows.map((w) => (
+                        <Chip key={w.id}>
+                          <BrandLogo id={w.chain} size={12} rounded={false} className="rounded-[3px]" />
+                          {getChainBrand(w.chain).name}
+                        </Chip>
+                      ))}
+                      {name && (
                         <span className="text-xs text-gray-400 font-mono truncate">{shortAddr}</span>
                       )}
                     </div>
                   </div>
                 </div>
                 <button
-                  onClick={() => onDisconnectWallet(w.id)}
+                  onClick={() => onDisconnectWalletGroup(g.rows.map((w) => w.id))}
                   className="text-xs text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100 flex-shrink-0"
                 >
                   Remove

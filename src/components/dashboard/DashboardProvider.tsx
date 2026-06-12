@@ -39,7 +39,7 @@ interface ExchangeInput {
   password?: string;
 }
 
-interface WalletInput {
+export interface WalletInput {
   address: string;
   chain: string;
   label: string;
@@ -80,7 +80,11 @@ interface DashboardContextValue {
   connectExchange: (data: ExchangeInput) => Promise<void>;
   disconnectExchange: (id: string) => Promise<void>;
   connectWallet: (data: WalletInput) => Promise<void>;
+  /** Batch add (brand-first import: one address → several chain rows, one toast). */
+  connectWallets: (items: WalletInput[]) => Promise<void>;
   disconnectWallet: (id: string) => Promise<void>;
+  /** Remove a whole brand/address group of wallet rows with a single confirm. */
+  disconnectWalletGroup: (ids: string[]) => Promise<void>;
   generateToken: (name: string, permission: string) => Promise<string | null>;
   revokeToken: (id: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -529,6 +533,64 @@ export function DashboardProvider({
     [isMock, user, toast, fetchPortfolio]
   );
 
+  // Batch add: sequential POSTs (gentle on rate limits), one refresh, one toast.
+  const connectWallets = useCallback(
+    async (items: WalletInput[]) => {
+      if (items.length === 0) return;
+      if (isMock) {
+        setWallets((prev) => [
+          ...prev,
+          ...items.map((data, i) => ({
+            id: `mock-${Date.now()}-${i}`,
+            address: data.address,
+            chain: data.chain,
+            label: data.label,
+            brand: data.brand ?? null,
+            created_at: new Date().toISOString(),
+          })),
+        ]);
+        toast.success(items.length === 1 ? "Wallet added" : `Wallet added across ${items.length} chains`);
+        return;
+      }
+
+      const failures: string[] = [];
+      for (const item of items) {
+        try {
+          const res = await fetch("/api/wallet/connect", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item),
+          });
+          if (!res.ok) {
+            const result = await res.json().catch(() => null);
+            // "Already connected" is a no-op for a batch, not a failure worth surfacing.
+            if (res.status !== 409) failures.push(`${item.chain}: ${result?.error ?? "failed"}`);
+          }
+        } catch {
+          failures.push(`${item.chain}: network error`);
+        }
+      }
+
+      const supabase = createClient();
+      const { data: ws } = await supabase
+        .from("wallets")
+        .select("id, address, chain, label, brand, created_at")
+        .eq("user_id", user!.id);
+      setWallets(ws ?? []);
+
+      if (failures.length === items.length) {
+        throw new Error(failures[0] ?? "Failed to add wallet");
+      }
+      if (failures.length > 0) {
+        toast.error(`Added with ${failures.length} failure${failures.length > 1 ? "s" : ""}: ${failures.join("; ")}`);
+      } else {
+        toast.success(items.length === 1 ? "Wallet added" : `Wallet added across ${items.length} chains`);
+      }
+      fetchPortfolio();
+    },
+    [isMock, user, toast, fetchPortfolio]
+  );
+
   const disconnectWallet = useCallback(
     async (id: string) => {
       const ok = await confirm({
@@ -568,6 +630,59 @@ export function DashboardProvider({
       }
     },
     [isMock, confirm, wallets, connections, toast]
+  );
+
+  const disconnectWalletGroup = useCallback(
+    async (ids: string[]) => {
+      if (ids.length === 0) return;
+      const ok = await confirm({
+        title: "Remove this wallet?",
+        message:
+          ids.length > 1
+            ? `This removes the address from all ${ids.length} tracked chains. You can re-add it anytime.`
+            : "This wallet will stop contributing to your portfolio context.",
+        confirmLabel: "Remove",
+        tone: "danger",
+      });
+      if (!ok) return;
+
+      if (isMock) {
+        setWallets((prev) => {
+          const remaining = prev.filter((w) => !ids.includes(w.id));
+          if (remaining.length === 0 && connections.length === 0) setPortfolio(null);
+          return remaining;
+        });
+        toast.success("Wallet removed");
+        return;
+      }
+
+      let failed = 0;
+      for (const id of ids) {
+        try {
+          const res = await fetch("/api/wallet/disconnect", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ walletId: id }),
+          });
+          if (!res.ok) failed++;
+        } catch {
+          failed++;
+        }
+      }
+
+      const supabase = createClient();
+      const { data: ws } = await supabase
+        .from("wallets")
+        .select("id, address, chain, label, brand, created_at")
+        .eq("user_id", user!.id);
+      const remaining = ws ?? [];
+      setWallets(remaining);
+      if (remaining.length === 0 && connections.length === 0) setPortfolio(null);
+
+      if (failed > 0) toast.error(`Couldn't remove ${failed} chain${failed > 1 ? "s" : ""}. Try again.`);
+      else toast.success("Wallet removed");
+    },
+    [isMock, confirm, connections, user, toast]
   );
 
   const generateToken = useCallback(
@@ -719,7 +834,9 @@ export function DashboardProvider({
     connectExchange,
     disconnectExchange,
     connectWallet,
+    connectWallets,
     disconnectWallet,
+    disconnectWalletGroup,
     generateToken,
     revokeToken,
     logout,

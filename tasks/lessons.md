@@ -70,3 +70,18 @@ MCP tools are loaded at **session startup**. If you register a new MCP mid-sessi
 5. Start new session to get tools loaded
 6. Test: call get_portfolio / get_context from Claude Code
 ```
+
+---
+
+## 2026-06-12: Turbopack Stale CSS After Editing globals.css
+
+### Problem
+After rewriting `globals.css` (new custom classes) and starting `next dev`, the served CSS contained the OLD custom classes but none of the new ones — while JSX changes WERE picked up. No build errors anywhere.
+
+### Root Cause
+Next 16 dev (Turbopack) reused a stale on-disk cache in `.next/` from a previous session; CSS chunks didn't invalidate.
+
+### Fix / Pattern
+1. Symptom check: in DevTools, scan `document.styleSheets` for a new class name — 0 hits while old custom classes match → stale compiled CSS, not a code bug.
+2. Stop the dev server, delete the `.next` directory (use a relative path from the app dir — the safety hook blocks absolute-path recursive deletes), restart.
+3. Headless-preview gotcha: programmatic scroll + screenshot can capture an unpainted (white) frame; instead resize the viewport tall (e.g. 1440x4900) and capture the whole page in one frame.
