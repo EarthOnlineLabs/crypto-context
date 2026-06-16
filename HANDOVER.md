@@ -164,7 +164,7 @@ Supabase/Postgres，**8 张表**，每张 `user_id → auth.users` 且 RLS 按 `
 
 ## 7. 测试与部署
 
-- **52 单测 / 5 文件**（`src/lib/__tests__/`）：覆盖 security/crypto、context 装配、generators、profile-facts、brand 资产映射。**无集成/E2E 层**（测试金字塔缺口）。
+- **56 单测 / 6 文件**（`src/lib/__tests__/`）：覆盖 security/crypto、context 装配、generators、profile-facts、brand 资产映射，以及 brand-assets 清单 ↔ `public/` 文件的漂移守卫（断言每个 manifest id 都有对应 PNG、无孤儿文件、符号小写、数量锁定 32/151）。**无集成/E2E 层**（测试金字塔缺口）。
 - `pnpm build` exit 0（38 静态页）。**ESLint 存量 7 个 error**（react-hooks 新规则对旧组件的告警，先于本轮存在，不阻断 Vercel 构建）。
 - 部署：push `main` → Vercel 自动部署。
 
@@ -194,7 +194,6 @@ Supabase/Postgres，**8 张表**，每张 `user_id → auth.users` 且 RLS 按 `
 - 无 KEK 轮换支持（无 key versioning / envelope），`ENCRYPTION_KEY` 轮换会孤立既有密文。
 
 **可维护性 / 脆弱耦合**
-- **logo 清单手工维护无守卫**：`brand-assets.ts` 的 Set 与 `public/` 文件靠人保持同步，无 test/build 步骤断言"每个 id 都有文件"。漏一个就静默降级 monogram。（值得加一个测试。）
 - `ContextExport` 的分节清单靠精确匹配后端 markdown 头串（`# Investor Notes`、`/^# Trading Profile — /gm` 等）；后端改头文案会**静默断掉** chips。前后端无共享常量。
 - `AddWalletForm` 重复了 `chains.ts` 的链常量/校验器（`EVM_CHAINS`/`EVM_RE` 等），加链时有漂移风险。
 - `connectWallets` 顺序 POST（7 链 MetaMask = 7 次串行请求），可并行化。
