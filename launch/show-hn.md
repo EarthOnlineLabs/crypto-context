@@ -21,7 +21,7 @@ Alternates (if the primary feels off, or for a retry):
 
 Keep it plain. No "revolutionary," no emoji. HN punishes hype.
 
-**URL:** `https://github.com/0xrikt/crypto-context`
+**URL:** `https://github.com/EarthOnlineLabs/crypto-context`
 
 ---
 

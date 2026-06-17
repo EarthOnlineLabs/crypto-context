@@ -9,7 +9,7 @@ CryptoContext is a **remote (HTTP) MCP server** with Bearer-token auth, and it's
 - **Name:** CryptoContext
 - **Endpoint:** `https://cryptocontext.aiself.site/api/mcp` (HTTP transport, JSON-RPC 2.0)
 - **Auth:** `Authorization: Bearer <token>` (created in the dashboard)
-- **Repo:** https://github.com/0xrikt/crypto-context
+- **Repo:** https://github.com/EarthOnlineLabs/crypto-context
 - **Tools:** `get_portfolio`, `get_context`
 - **Tags:** crypto, finance, portfolio, trading, context, read-only, open-source
 
@@ -115,7 +115,7 @@ Geared toward installable servers; supports remote. Provide the config snippet. 
 This is a PR, not a form. Open the repo, find the right category (Finance & Fintech / Crypto), and add **one alphabetically-placed line**. Exact entry to submit:
 
 ```markdown
-- [CryptoContext](https://github.com/0xrikt/crypto-context) 🏎️ ☁️ - Unify your crypto portfolio across every exchange and wallet into structured context any AI agent can query — holdings, concentration, and how you actually trade. Open source, read-only.
+- [CryptoContext](https://github.com/EarthOnlineLabs/crypto-context) 🏎️ ☁️ - Unify your crypto portfolio across every exchange and wallet into structured context any AI agent can query — holdings, concentration, and how you actually trade. Open source, read-only.
 ```
 
 (Check that repo's legend for the right emoji: 🏎️ often = TypeScript/Deno/Go-fast, ☁️ = cloud/remote service. Match whatever convention the specific list uses — read its header before submitting. Keep the description to one line; long entries get rejected.)

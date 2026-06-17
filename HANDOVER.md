@@ -14,7 +14,7 @@
 |----|------|
 | 线上（canonical） | https://cryptocontext.aiself.site |
 | 公开演示（无需注册，全虚构数据） | https://cryptocontext.aiself.site/demo |
-| GitHub（MIT，公开） | https://github.com/0xrikt/crypto-context |
+| GitHub（MIT，公开） | https://github.com/EarthOnlineLabs/crypto-context |
 | MCP 端点（JSON-RPC 2.0，Bearer token） | `https://cryptocontext.aiself.site/api/mcp` |
 | Context 导出（cookie 或 Bearer 双鉴权，text/markdown） | `GET /api/context/full` |
 
@@ -212,7 +212,7 @@ Supabase/Postgres，**8 张表**，每张 `user_id → auth.users` 且 RLS 按 `
 
 发帖前操作员仍需手工完成：
 1. `pnpm build` 绿 + 生产健康（landing 加载、注册可用、能建 MCP token、`get_context` 对已连 venue 返回）。
-2. 仓库 public 且含 LICENSE/SECURITY.md/README；设置 repo metadata（description/topics/homepage）——**`gh` 需以 owner `0xrikt` 登录**（当前本地登的是 `EarthOnlineDev`，能 push 但无权改 metadata，会 404；先 `gh auth switch`）。
+2. 仓库 public 且含 LICENSE/SECURITY.md/README；repo metadata（description/topics/homepage）**已设置**。仓库现归属 `EarthOnlineLabs` 组织（`github.com/EarthOnlineLabs/crypto-context`，旧 `0xrikt/crypto-context` 链接自动 301 跳转）；本地 `gh` 账号 `EarthOnlineDev` 是组织 owner，可直接改 metadata（不再 404，无需切账号）。
 3. 干净 transcript 截图备用（落地页墨色证言区或 /demo）。
 4. **下一个 HN 窗口：周二–周四，具体 Jun 16–18，8–10am ET**；Day-0 目录提交可提前。提交 **repo URL**（非营销站）到 HN，立即贴准备好的首评，守帖 3+ 小时。
 5. 跨平台不复制同文；不刷票；只在有 standing 的社区发、首行披露作者身份。

@@ -101,7 +101,7 @@ What it does **not** magically solve, and where you still carry responsibility:
 
 If you believe you've found a security issue, please report it privately rather than opening a public issue:
 
-- Open a [GitHub security advisory](https://github.com/0xrikt/crypto-context/security/advisories/new) on this repository, **or**
+- Open a [GitHub security advisory](https://github.com/EarthOnlineLabs/crypto-context/security/advisories/new) on this repository, **or**
 - Reach out via the contact listed on the GitHub profile [@0xrikt](https://github.com/0xrikt).
 
 Please include steps to reproduce and the potential impact. I'll acknowledge as quickly as I reasonably can and keep you posted on a fix. Responsible disclosure is genuinely appreciated.

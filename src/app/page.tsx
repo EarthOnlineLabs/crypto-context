@@ -4,7 +4,7 @@ import { BrandLogo } from "@/components/icons/BrandLogo";
 import { EXCHANGE_DISPLAY_NAMES } from "@/lib/exchange-names";
 import { CHAIN_BRANDS, PICKER_WALLET_BRANDS } from "@/lib/wallets/brands";
 
-const GITHUB_URL = "https://github.com/0xrikt/crypto-context";
+const GITHUB_URL = "https://github.com/EarthOnlineLabs/crypto-context";
 
 /** Every supported venue, with its mark — the ticker makes "comprehensive" tangible. */
 const EXCHANGE_TILES = Object.entries(EXCHANGE_DISPLAY_NAMES).map(([id, name]) => ({ id, name }));

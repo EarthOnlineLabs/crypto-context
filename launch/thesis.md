@@ -58,7 +58,7 @@ The model race will keep going, and the models will keep getting better. But the
 
 Give your AI agents eyes.
 
-**→ [github.com/0xrikt/crypto-context](https://github.com/0xrikt/crypto-context)** · live demo and one-line MCP setup inside.
+**→ [github.com/EarthOnlineLabs/crypto-context](https://github.com/EarthOnlineLabs/crypto-context)** · live demo and one-line MCP setup inside.
 
 ---
 

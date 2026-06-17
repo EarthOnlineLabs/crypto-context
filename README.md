@@ -76,7 +76,7 @@ The dashboard shows your exact command with your endpoint and token filled in â€
 The strongest answer to "is this safe with my keys?" is running it yourself. You hold the encryption key and the database; no third party has any access.
 
 ```bash
-git clone https://github.com/0xrikt/crypto-context.git
+git clone https://github.com/EarthOnlineLabs/crypto-context.git
 cd crypto-context
 cp .env.example .env.local        # fill in the values below
 pnpm install                      # or npm install
