@@ -53,18 +53,18 @@ Everything needed to take CryptoContext public, organized so the **message** dri
   ```bash
   gh repo edit EarthOnlineLabs/crypto-context \
     --description "Give any AI agent your real crypto portfolio via MCP. Unifies every exchange + wallet into structured context. Open source, read-only, \$0." \
-    --homepage "https://cryptocontext.aiself.site" \
+    --homepage "https://cryptocontext.earthonline.site" \
     --add-topic mcp --add-topic model-context-protocol --add-topic crypto \
     --add-topic portfolio --add-topic ai-agents --add-topic claude \
     --add-topic cursor --add-topic ccxt --add-topic defi --add-topic open-source
   ```
   ✅ Already applied. The repo now lives under the **EarthOnlineLabs** org and the local `gh` account `EarthOnlineDev` is an org owner, so it can edit metadata directly — no more HTTP 404, no account switch needed.
-- [x] **Custom domain** — DONE. Canonical is `https://cryptocontext.aiself.site`; the old
+- [x] **Custom domain** — DONE. Canonical is `https://cryptocontext.earthonline.site`; the old
   Vercel host 308-redirects human pages there (its `/api/*` still serves, so nothing breaks).
   The whole kit + README already use the canonical URL.
 - [ ] **A clean transcript screenshot exists** for the thread / HN / Farcaster (real session preferred; else the landing-page transcript card or `/demo`). The landing's dark proof-terminal section now screenshots well for this.
 - [ ] **README screenshot is current** — `docs/demo-dashboard.png` must show the new venue-grouped Context Insights + new logo (retake from `/demo` after deploy).
-- [x] **Public no-signup demo** — `https://cryptocontext.aiself.site/demo` (fabricated data).
+- [x] **Public no-signup demo** — `https://cryptocontext.earthonline.site/demo` (fabricated data).
   Lead with it in posts: people can click around before signing up.
 
 ---

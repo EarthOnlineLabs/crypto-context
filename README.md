@@ -6,7 +6,7 @@ CryptoContext unifies your entire crypto footprint — every exchange, every wal
 
 > **Not your context, not your AI.** Open source, MCP-native, runs for $0. Point it at any agent you choose — your context comes with you.
 
-**Try it without signing up**: [cryptocontext.aiself.site/demo](https://cryptocontext.aiself.site/demo) · **App**: [cryptocontext.aiself.site](https://cryptocontext.aiself.site) · **Security**: [SECURITY.md](SECURITY.md) · **License**: [MIT](LICENSE)
+**Try it without signing up**: [cryptocontext.earthonline.site/demo](https://cryptocontext.earthonline.site/demo) · **App**: [cryptocontext.earthonline.site](https://cryptocontext.earthonline.site) · **Security**: [SECURITY.md](SECURITY.md) · **License**: [MIT](LICENSE)
 
 ![CryptoContext dashboard (interactive demo, fabricated data)](docs/demo-dashboard.png)
 
@@ -45,14 +45,14 @@ Three integration forms, pick whichever fits the AI you live in:
 
 ## Quickstart — use the hosted version
 
-1. Click around the [no-signup demo](https://cryptocontext.aiself.site/demo) first if you like.
-2. Sign up at [cryptocontext.aiself.site](https://cryptocontext.aiself.site) and connect a wallet address (zero risk) or an exchange with a **read-only** API key.
+1. Click around the [no-signup demo](https://cryptocontext.earthonline.site/demo) first if you like.
+2. Sign up at [cryptocontext.earthonline.site](https://cryptocontext.earthonline.site) and connect a wallet address (zero risk) or an exchange with a **read-only** API key.
 3. Create an MCP token in the dashboard → Connect.
 4. Add it to your agent:
 
 ```bash
 claude mcp add --transport http crypto-ctx \
-  https://cryptocontext.aiself.site/api/mcp \
+  https://cryptocontext.earthonline.site/api/mcp \
   --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -62,7 +62,7 @@ Or in any MCP client config:
 {
   "mcpServers": {
     "crypto-context": {
-      "url": "https://cryptocontext.aiself.site/api/mcp",
+      "url": "https://cryptocontext.earthonline.site/api/mcp",
       "headers": { "Authorization": "Bearer YOUR_TOKEN" }
     }
   }

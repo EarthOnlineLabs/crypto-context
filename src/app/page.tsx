@@ -376,7 +376,7 @@ export default function Home() {
                 <span className="text-emerald-50/90">crypto-ctx \</span>
                 <br />
                 {"  "}
-                <span className="text-teal-300">https://cryptocontext.aiself.site/api/mcp</span>{" "}
+                <span className="text-teal-300">https://cryptocontext.earthonline.site/api/mcp</span>{" "}
                 <span className="text-emerald-100/50">--header</span>{" "}
                 <span className="text-emerald-50/90">&quot;Authorization: Bearer</span>{" "}
                 <span className="text-emerald-400">YOUR_TOKEN</span>

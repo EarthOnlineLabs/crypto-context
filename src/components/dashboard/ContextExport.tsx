@@ -5,7 +5,7 @@ import { useDashboard } from "./DashboardProvider";
 import { Button, Card, CopyButton, SectionHeader } from "@/components/ui";
 
 /** Stable production endpoint the downloadable skill points at. */
-const ENDPOINT = "https://cryptocontext.aiself.site/api/context/full";
+const ENDPOINT = "https://cryptocontext.earthonline.site/api/context/full";
 
 function buildSkillMd(): string {
   return `---

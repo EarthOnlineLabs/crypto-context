@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE = "https://cryptocontext.aiself.site";
+const BASE = "https://cryptocontext.earthonline.site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

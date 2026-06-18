@@ -21,7 +21,7 @@ const newsreader = Newsreader({
   weight: ["400", "500"],
 });
 
-const SITE_URL = "https://cryptocontext.aiself.site";
+const SITE_URL = "https://cryptocontext.earthonline.site";
 const TITLE = "CryptoContext — Not your context, not your AI.";
 const DESCRIPTION =
   "Your personal crypto context layer. Connect exchanges and wallets once — every AI agent instantly knows what you hold, how you trade, and what your strategy is. MCP-native, open source, free.";

@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/dashboard", "/dev/"],
       },
     ],
-    sitemap: "https://cryptocontext.aiself.site/sitemap.xml",
+    sitemap: "https://cryptocontext.earthonline.site/sitemap.xml",
   };
 }

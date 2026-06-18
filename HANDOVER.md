@@ -12,10 +12,10 @@
 
 | 项 | 地址 |
 |----|------|
-| 线上（canonical） | https://cryptocontext.aiself.site |
-| 公开演示（无需注册，全虚构数据） | https://cryptocontext.aiself.site/demo |
+| 线上（canonical） | https://cryptocontext.earthonline.site |
+| 公开演示（无需注册，全虚构数据） | https://cryptocontext.earthonline.site/demo |
 | GitHub（MIT，公开） | https://github.com/EarthOnlineLabs/crypto-context |
-| MCP 端点（JSON-RPC 2.0，Bearer token） | `https://cryptocontext.aiself.site/api/mcp` |
+| MCP 端点（JSON-RPC 2.0，Bearer token） | `https://cryptocontext.earthonline.site/api/mcp` |
 | Context 导出（cookie 或 Bearer 双鉴权，text/markdown） | `GET /api/context/full` |
 
 旧 Vercel 域名的人类页面 308 跳转到 canonical；其 `/api/*` 仍可用（不破坏既有 MCP 配置）。

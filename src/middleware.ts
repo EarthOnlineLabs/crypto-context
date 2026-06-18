@@ -9,7 +9,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SECURITY_HEADERS } from "@/lib/security";
 
-const CANONICAL_HOST = "cryptocontext.aiself.site";
+const CANONICAL_HOST = "cryptocontext.earthonline.site";
 const LEGACY_HOSTS = new Set(["app-rho-jet-70.vercel.app"]);
 
 export async function middleware(request: NextRequest) {

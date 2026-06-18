@@ -98,7 +98,7 @@ export default function OgImage() {
             fontSize: 22,
           }}
         >
-          16 exchanges · 8 chains · open source · cryptocontext.aiself.site
+          16 exchanges · 8 chains · open source · cryptocontext.earthonline.site
         </div>
       </div>
     ),
