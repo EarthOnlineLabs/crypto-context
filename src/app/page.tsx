@@ -80,9 +80,10 @@ export default function Home() {
             </h1>
 
             <p className="mt-7 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-              Your coins are scattered across exchanges and wallets, so every AI
-              gives you generic advice. CryptoContext unifies your whole footprint —
-              and how you trade — into one context any agent can query over MCP.
+              Your crypto identity — what you hold, how you trade — belongs to you,
+              not to any app. CryptoContext turns it into context you own and point
+              at any AI: read-only, no token, open source. So every agent knows you,
+              instead of guessing.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
